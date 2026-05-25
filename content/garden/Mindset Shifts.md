@@ -4,6 +4,7 @@ publish: true
 created: 2026-05-25
 tags:
   - anxiety
+  - goals
 ---
 
 For the most part, we can’t change the world. We can’t change the fundamental facts of existence–like the fact that
