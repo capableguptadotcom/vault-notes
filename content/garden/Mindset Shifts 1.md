@@ -1,5 +1,5 @@
 ---
-title:
+title: Mindset Shifts
 publish: true
 ---
 
