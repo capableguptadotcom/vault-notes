@@ -39,7 +39,7 @@ jobs:
           npm test
 
       - name: Build site for the custom domain
-        run: npx quartz build
+        run: node quartz/bootstrap-cli.mjs build
         env:
           SITE_URL: capablegupta.com
 
