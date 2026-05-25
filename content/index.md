@@ -18,4 +18,4 @@ description: A growing collection of notes, ideas, and things worth returning to
 
 This site is written in Obsidian. Published notes keep their links and relationships, so the garden can grow naturally rather than as a separate writing chore.
 
-To publish a note, add the `publish: true` property in Obsidian. While the GitHub publisher watcher is running, saving it is enough to deploy it to this site. Until then, it remains outside the public site.
+To publish a note, add the `publish: true` property in Obsidian. Saving a published note from my writing computer triggers a private-safe export and deploys it here through GitHub Pages.

@@ -84,6 +84,18 @@ npm run watch:github
 
 When started, the watcher publishes any opted-in change made while it was offline. After that, saving a public note causes its sanitized export to be committed and pushed after a short debounce. Saving only private notes produces no public commit.
 
+On this Windows computer, install the watcher as a background task that begins at sign-in:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\install-windows-publisher.ps1
+```
+
+Its log is stored at `%LOCALAPPDATA%\CapableGuptaSite\publisher.log`. To turn background publishing off later:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\uninstall-windows-publisher.ps1
+```
+
 The workflow at [.github/workflows/deploy-pages.yml](.github/workflows/deploy-pages.yml) runs tests, builds Quartz with `SITE_URL=capablegupta.com`, and deploys the generated static site through GitHub Pages.
 
 ### Custom Domain
@@ -162,6 +174,7 @@ Without an Obsidian Sync subscription, [Syncthing](https://docs.syncthing.net/in
 - [scripts/sync-vault.mjs](scripts/sync-vault.mjs): opt-in note and attachment export.
 - [scripts/publish-github.mjs](scripts/publish-github.mjs): export, commit, and push public-note updates.
 - [scripts/watch-publish-github.mjs](scripts/watch-publish-github.mjs): publish opted-in changes automatically while writing.
+- [scripts/install-windows-publisher.ps1](scripts/install-windows-publisher.ps1): start the publisher automatically after Windows sign-in.
 - [quartz.config.ts](quartz.config.ts): title, domain, publishing filter, typography, and colors.
 - [quartz.layout.ts](quartz.layout.ts): navigation, recent notes, graph, backlinks, and footer.
 - [quartz/styles/custom.scss](quartz/styles/custom.scss): Minimal-inspired presentation.
