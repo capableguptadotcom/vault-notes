@@ -1,5 +1,5 @@
 param(
-  [string]$TaskName = "Capable Gupta Obsidian Publisher"
+  [string]$TaskName = "Saksham Gupta Obsidian Publisher"
 )
 
 $ErrorActionPreference = "Stop"

@@ -1,4 +1,4 @@
-# Capable Gupta
+# Saksham Gupta
 
 An Obsidian-first personal website for [capablegupta.com](https://capablegupta.com), built with [Quartz 4](https://quartz.jzhao.xyz/). It is designed to feel close to the Minimal theme: quiet typography, linked notes, backlinks, search, and a light personal landing page.
 
@@ -116,9 +116,9 @@ Keep GitHub's `_github-pages-challenge-capableguptadotcom` TXT record in Cloudfl
 
 ## Portrait and identity
 
-The home page is [content/index.md](content/index.md). Replace `quartz/static/profile-placeholder.svg` with the portrait image, or change its `src` to a new image in `quartz/static/`. The `.garden-portrait` style already crops it into a round portrait.
+The home page is [content/index.md](content/index.md). The optimized portrait is stored at `quartz/static/saksham-avatar.webp`; the original supplied illustration was tightly cropped so the face remains clear without dominating the minimal layout. `quartz/static/icon.png` uses a still tighter crop for the browser favicon.
 
-The public name is set to `Capable Gupta`; update the introduction and portrait after the first deployed version is visible.
+The public identity is set to `Saksham Gupta`.
 
 ## Future VPS Hosting
 
