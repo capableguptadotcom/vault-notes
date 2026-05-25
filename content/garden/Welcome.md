@@ -1,0 +1,16 @@
+---
+title: "Welcome"
+publish: true
+created: "2026-05-25"
+published: "2026-05-25"
+tags:
+  - notes
+---
+
+This is the first public note in my digital garden. I write here in Obsidian, and selected notes can grow into pages on this site.
+
+## Publishing from Obsidian
+
+A note becomes part of the public garden when it has the `publish: true` property. Links, images, and connected ideas can travel with it while the rest of the vault remains private.
+
+This page is a starting point and can be edited like any other note.

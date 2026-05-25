@@ -1,0 +1,95 @@
+@use "./base.scss";
+
+:root {
+  --garden-rule: var(--lightgray);
+}
+
+body {
+  letter-spacing: -0.006em;
+}
+
+.page-title {
+  font-size: 1.15rem;
+  letter-spacing: -0.035em;
+}
+
+.center article {
+  font-size: 1.03rem;
+  line-height: 1.72;
+}
+
+.center article h1,
+.center article h2,
+.center article h3 {
+  letter-spacing: -0.04em;
+}
+
+.center article h2 {
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--garden-rule);
+}
+
+.garden-profile {
+  align-items: center;
+  display: flex;
+  gap: 1.65rem;
+  margin: 0.6rem 0 1rem;
+}
+
+.garden-portrait {
+  border-radius: 50%;
+  flex-shrink: 0;
+  height: 108px;
+  object-fit: cover;
+  width: 108px;
+}
+
+.garden-kicker {
+  color: var(--gray);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+}
+
+.garden-introduction {
+  color: var(--dark);
+  font-size: 1.22rem;
+  letter-spacing: -0.035em;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.recent-notes > h3 {
+  color: var(--gray);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.recent-notes .recent-ul .recent-li {
+  border-bottom: 1px solid var(--garden-rule);
+  margin-bottom: 0;
+  padding: 0.8rem 0;
+}
+
+.recent-notes .recent-ul .recent-li h3 {
+  font-size: 0.96rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+@media all and (max-width: 800px) {
+  .garden-profile {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .garden-introduction {
+    font-size: 1.1rem;
+  }
+}

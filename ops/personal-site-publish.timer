@@ -1,0 +1,11 @@
+[Unit]
+Description=Rebuild the Obsidian personal site every minute
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+Persistent=true
+Unit=personal-site-publish.service
+
+[Install]
+WantedBy=timers.target

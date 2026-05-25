@@ -1,0 +1,11 @@
+[Unit]
+Description=Build and publish the Obsidian personal site
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=personal-site
+Group=personal-site
+WorkingDirectory=/srv/personal-site
+EnvironmentFile=/etc/personal-site.env
+ExecStart=/usr/bin/bash /srv/personal-site/ops/publish-on-vps.sh

@@ -1,0 +1,18 @@
+[Unit]
+Description=Continuously sync the Obsidian vault used by the personal site
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=personal-site
+Group=personal-site
+WorkingDirectory=/srv/obsidian/tingu-wiki
+Environment=HOME=/home/personal-site
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/bin/env ob sync --continuous --path /srv/obsidian/tingu-wiki
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target

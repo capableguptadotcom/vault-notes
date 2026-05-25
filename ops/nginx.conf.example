@@ -1,0 +1,17 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name notes.your-domain.com;
+
+    root /var/www/personal-site/current;
+    index index.html;
+
+    location / {
+        try_files $uri $uri.html $uri/ =404;
+    }
+
+    location ~* \.(css|js|png|jpg|jpeg|gif|svg|webp|ico|xml)$ {
+        expires 7d;
+        try_files $uri =404;
+    }
+}
