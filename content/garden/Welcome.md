@@ -13,4 +13,6 @@ This is the first public note in my digital garden. I write here in Obsidian, an
 
 A note becomes part of the public garden when it has the `publish: true` property. Links, images, and connected ideas can travel with it while the rest of the vault remains private.
 
+Published changes from this vault are deployed automatically through GitHub Pages.
+
 This page is a starting point and can be edited like any other note.
