@@ -86,9 +86,11 @@ When started, the watcher publishes any opted-in change made while it was offlin
 
 The workflow at [.github/workflows/deploy-pages.yml](.github/workflows/deploy-pages.yml) runs tests, builds Quartz with `SITE_URL=capablegupta.com`, and deploys the generated static site through GitHub Pages.
 
-### Custom Domain Setup
+### Custom Domain
 
-After the initial push, configure the repository's Pages custom domain as `capablegupta.com`. At the DNS provider for `capablegupta.com`, configure GitHub Pages apex records:
+The public site is deployed at [https://capablegupta.com](https://capablegupta.com). GitHub Pages owns the custom domain configuration, domain ownership is verified, and HTTPS is enforced.
+
+Cloudflare is configured with these DNS-only GitHub Pages records:
 
 ```text
 A      @      185.199.108.153
@@ -98,7 +100,7 @@ A      @      185.199.111.153
 CNAME  www    capableguptadotcom.github.io
 ```
 
-Once GitHub verifies the DNS records, enable HTTPS in the repository Pages settings. GitHub may take time to issue the certificate and propagate DNS.
+Keep GitHub's `_github-pages-challenge-capableguptadotcom` TXT record in Cloudflare. It preserves domain verification and protects the domain from being claimed by another GitHub Pages site.
 
 ## Portrait and identity
 
