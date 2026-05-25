@@ -120,15 +120,19 @@ body {
 }
 
 .garden-profile > div {
-  max-width: 530px;
+  max-width: 505px;
 }
 
 .garden-portrait {
+  background: white;
   border-radius: 50%;
+  box-shadow:
+    0 0 0 2px var(--light),
+    0 0 0 3px var(--lightgray);
   flex-shrink: 0;
-  height: 66px;
+  height: 92px;
   object-fit: cover;
-  width: 66px;
+  width: 92px;
 }
 
 .garden-kicker {
@@ -239,8 +243,8 @@ body {
   }
 
   .garden-portrait {
-    height: 56px;
-    width: 56px;
+    height: 72px;
+    width: 72px;
   }
 
   .garden-introduction {
