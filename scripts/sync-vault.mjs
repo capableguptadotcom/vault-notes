@@ -3,6 +3,7 @@ import os from "node:os"
 import path from "node:path"
 import { pathToFileURL } from "node:url"
 import matter from "gray-matter"
+import prettier from "prettier"
 
 const projectRoot = path.resolve(import.meta.dirname, "..")
 const curatedContentRoot = path.join(projectRoot, "content")
@@ -106,6 +107,16 @@ async function copyIntoContent(file, contentRoot, prefix = "") {
   await fs.utimes(destination, sourceStats.atime, sourceStats.mtime)
 }
 
+async function copyNoteIntoContent(file, contentRoot, prefix = "") {
+  const destination = path.join(contentRoot, prefix, publicRelativePath(file.relativePath))
+  const markdown = await fs.readFile(file.absolutePath, "utf8")
+  const formatted = await prettier.format(markdown, { filepath: destination })
+  await fs.mkdir(path.dirname(destination), { recursive: true })
+  await fs.writeFile(destination, formatted)
+  const sourceStats = await fs.stat(file.absolutePath)
+  await fs.utimes(destination, sourceStats.atime, sourceStats.mtime)
+}
+
 function publicRelativePath(relativePath) {
   const segments = relativePath.split(path.sep)
   return segments[0]?.toLowerCase() === publicCollectionFolder
@@ -173,7 +184,7 @@ async function selectPublishedContent(vaultRoot) {
 }
 
 async function writePublicContent(contentRoot, publishedNotes, selectedAssets, prefix = "") {
-  for (const note of publishedNotes) await copyIntoContent(note, contentRoot, prefix)
+  for (const note of publishedNotes) await copyNoteIntoContent(note, contentRoot, prefix)
   for (const asset of selectedAssets.values()) await copyIntoContent(asset, contentRoot, prefix)
 }
 

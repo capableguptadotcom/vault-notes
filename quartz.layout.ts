@@ -57,6 +57,17 @@ export const defaultContentPageLayout: PageLayout = {
       }),
       condition: (page) => page.fileData.slug === "index",
     }),
+    Component.ConditionalRender({
+      component: Component.RecentNotes({
+        title: "You might want to explore",
+        limit: 2,
+        linkToMore: false,
+        showTags: false,
+        excludeCurrent: true,
+        filter: (page) => page.slug !== "index",
+      }),
+      condition: (page) => page.fileData.slug !== "index",
+    }),
   ],
 }
 

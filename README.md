@@ -84,6 +84,8 @@ npm run watch:github
 
 When started, the watcher publishes any opted-in change made while it was offline. After that, saving a public note causes its sanitized export to be committed and pushed after a short debounce. Saving only private notes produces no public commit.
 
+Published Markdown is formatted during export before the watcher creates its Git commit. The GitHub Pages workflow also normalizes files in `content/garden/` before verification as a defensive fallback for manual public-note commits.
+
 On this Windows computer, install the watcher as a background task that begins at sign-in:
 
 ```powershell

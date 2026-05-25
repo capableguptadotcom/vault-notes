@@ -4,6 +4,7 @@ import os from "node:os"
 import path from "node:path"
 import { spawnSync } from "node:child_process"
 import { after, before, test } from "node:test"
+import prettier from "prettier"
 import { exportGithubGarden, syncVault } from "./sync-vault.mjs"
 
 const projectRoot = path.resolve(import.meta.dirname, "..")
@@ -93,4 +94,21 @@ test("exports only opted-in content for a public GitHub Pages repository", async
   assert.equal(fs.existsSync(path.join(githubGarden, "media", "public-image.svg")), true)
   assert.equal(fs.existsSync(path.join(githubGarden, "Private note.md")), false)
   assert.equal(fs.existsSync(path.join(githubGarden, "media", "private-image.svg")), false)
+})
+
+test("formats published Markdown while leaving the vault source untouched", async () => {
+  const formattingVault = path.join(outputRoot, "formatting-vault")
+  const githubGarden = path.join(outputRoot, "formatted-github-garden")
+  const sourcePath = path.join(formattingVault, "Unformatted.md")
+  const source =
+    "---\ntitle: Messy\npublish: true\n---\n\nText with\n\n[a link](https://example.com)\n\nand more text.\n"
+
+  fs.mkdirSync(formattingVault, { recursive: true })
+  fs.writeFileSync(sourcePath, source)
+
+  await exportGithubGarden(formattingVault, githubGarden)
+
+  const exported = fs.readFileSync(path.join(githubGarden, "Unformatted.md"), "utf8")
+  assert.equal(exported, await prettier.format(source, { filepath: "Unformatted.md" }))
+  assert.equal(fs.readFileSync(sourcePath, "utf8"), source)
 })
