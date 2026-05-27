@@ -42,11 +42,13 @@ const SiteNav: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
 
 SiteNav.css = `
 .site-nav {
-  margin-left: auto;
+  align-items: center;
+  display: flex;
   position: relative;
 }
 
 .site-nav-links {
+  align-items: center;
   display: flex;
   gap: 1.5rem;
 }
@@ -54,6 +56,7 @@ SiteNav.css = `
 .site-nav a {
   color: var(--gray);
   font-weight: 400;
+  line-height: 1.8rem;
 }
 
 .site-nav a:hover {
