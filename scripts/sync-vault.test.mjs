@@ -5,7 +5,7 @@ import path from "node:path"
 import { spawnSync } from "node:child_process"
 import { after, before, test } from "node:test"
 import prettier from "prettier"
-import { exportGithubContent, syncVault } from "./sync-vault.mjs"
+import { exportGithubContent, publicRoot, syncVault } from "./sync-vault.mjs"
 
 const projectRoot = path.resolve(import.meta.dirname, "..")
 const fixtureVault = path.join(projectRoot, "test", "fixtures", "vault")
@@ -43,9 +43,12 @@ test("renders only public notes and assets embedded by them", () => {
   assert.equal(fs.existsSync(path.join(exportedContent, "notes", "index.md")), true)
   assert.equal(fs.existsSync(path.join(exportedContent, "notes", "Published note.md")), true)
   assert.equal(
-    fs.existsSync(path.join(exportedContent, "notes", "Notes", "Published note.md")),
+    fs.existsSync(
+      path.join(exportedContent, "notes", "capablegupta", "notes", "Published note.md"),
+    ),
     false,
   )
+  assert.equal(fs.existsSync(path.join(exportedContent, "capablegupta")), false)
   assert.equal(
     fs.existsSync(path.join(exportedContent, "notes", "media", "public-image.svg")),
     true,
@@ -73,9 +76,10 @@ test("renders only public notes and assets embedded by them", () => {
   assert.equal(fs.existsSync(path.join(renderedSite, "notes", "index.html")), true)
   assert.equal(fs.existsSync(path.join(renderedSite, "notes", "Published-note.html")), true)
   assert.equal(
-    fs.existsSync(path.join(renderedSite, "notes", "Notes", "Published-note.html")),
+    fs.existsSync(path.join(renderedSite, "notes", "capablegupta", "notes", "Published-note.html")),
     false,
   )
+  assert.equal(fs.existsSync(path.join(renderedSite, "capablegupta")), false)
   assert.equal(fs.existsSync(path.join(renderedSite, "notes", "media", "public-image.svg")), true)
   assert.equal(fs.existsSync(path.join(renderedSite, "writing", "index.html")), true)
   assert.equal(fs.existsSync(path.join(renderedSite, "writing", "Technical-post.html")), true)
@@ -90,18 +94,22 @@ test("renders only public notes and assets embedded by them", () => {
   )
   assert.equal(fs.existsSync(path.join(renderedSite, "notes", "Private-note.html")), false)
   assert.equal(fs.existsSync(path.join(renderedSite, "notes", "media", "private-image.svg")), false)
+  assert.equal(fs.existsSync(path.join(renderedSite, "garden")), false)
 })
 
 test("rejects public paths that collide inside a collection", async () => {
   const collisionVault = path.join(outputRoot, "collision-vault")
   const collisionContent = path.join(outputRoot, "collision-content")
-  fs.mkdirSync(path.join(collisionVault, "Notes", "media"), { recursive: true })
+  fs.mkdirSync(path.join(collisionVault, "capablegupta", "notes", "media"), { recursive: true })
   fs.mkdirSync(path.join(collisionVault, "media"), { recursive: true })
   fs.writeFileSync(
-    path.join(collisionVault, "Notes", "Welcome.md"),
-    "---\npublish: true\n---\n\n![[media/photo.svg]]\n\n![Other](../media/photo.svg)\n",
+    path.join(collisionVault, "capablegupta", "notes", "Welcome.md"),
+    "---\npublish: true\n---\n\n![[media/photo.svg]]\n\n![Other](../../media/photo.svg)\n",
   )
-  fs.writeFileSync(path.join(collisionVault, "Notes", "media", "photo.svg"), "<svg></svg>")
+  fs.writeFileSync(
+    path.join(collisionVault, "capablegupta", "notes", "media", "photo.svg"),
+    "<svg></svg>",
+  )
   fs.writeFileSync(path.join(collisionVault, "media", "photo.svg"), "<svg></svg>")
 
   await assert.rejects(
@@ -119,7 +127,11 @@ test("rejects published notes in the retired Garden source folder", async () => 
   await assert.rejects(() => syncVault(gardenVault, gardenContent), /retired Garden\/ folder/)
 })
 
-test("rejects published notes outside approved section folders", async () => {
+test("resolves the watched public root under capablegupta", async () => {
+  assert.equal(await publicRoot(fixtureVault), path.join(fixtureVault, "capablegupta"))
+})
+
+test("rejects published notes outside the capablegupta root", async () => {
   const looseVault = path.join(outputRoot, "loose-vault")
   const looseContent = path.join(outputRoot, "loose-content")
   fs.mkdirSync(looseVault, { recursive: true })
@@ -127,7 +139,34 @@ test("rejects published notes outside approved section folders", async () => {
 
   await assert.rejects(
     () => syncVault(looseVault, looseContent),
-    /must live under Notes\/, Writing\/, or Clippings\//,
+    /must live under the capablegupta\/ public root/,
+  )
+})
+
+test("rejects root-level section folders that bypass the public root", async () => {
+  const looseVault = path.join(outputRoot, "loose-section-vault")
+  const looseContent = path.join(outputRoot, "loose-section-content")
+  fs.mkdirSync(path.join(looseVault, "Notes"), { recursive: true })
+  fs.writeFileSync(path.join(looseVault, "Notes", "Welcome.md"), "---\npublish: true\n---\n")
+
+  await assert.rejects(
+    () => syncVault(looseVault, looseContent),
+    /must live under capablegupta\/notes, capablegupta\/writing, or capablegupta\/clippings/,
+  )
+})
+
+test("rejects published notes under unknown capablegupta folders", async () => {
+  const wrongFolderVault = path.join(outputRoot, "wrong-folder-vault")
+  const wrongFolderContent = path.join(outputRoot, "wrong-folder-content")
+  fs.mkdirSync(path.join(wrongFolderVault, "capablegupta", "drafts"), { recursive: true })
+  fs.writeFileSync(
+    path.join(wrongFolderVault, "capablegupta", "drafts", "Welcome.md"),
+    "---\npublish: true\n---\n",
+  )
+
+  await assert.rejects(
+    () => syncVault(wrongFolderVault, wrongFolderContent),
+    /must live under capablegupta\/notes, capablegupta\/writing, or capablegupta\/clippings/,
   )
 })
 
@@ -151,6 +190,7 @@ test("exports only opted-in content for a public GitHub Pages repository", async
   )
   assert.equal(fs.existsSync(path.join(githubContent, "clippings", "index.md")), true)
   assert.equal(fs.existsSync(path.join(githubContent, "clippings", "Interesting article.md")), true)
+  assert.equal(fs.existsSync(path.join(githubContent, "capablegupta")), false)
   assert.equal(fs.existsSync(path.join(githubContent, "garden")), false)
   assert.equal(fs.existsSync(path.join(githubContent, "notes", "Private note.md")), false)
   assert.equal(
@@ -162,7 +202,7 @@ test("exports only opted-in content for a public GitHub Pages repository", async
 test("formats published Markdown while leaving the vault source untouched", async () => {
   const formattingVault = path.join(outputRoot, "formatting-vault")
   const githubContent = path.join(outputRoot, "formatted-github-content")
-  const sourcePath = path.join(formattingVault, "Notes", "Unformatted.md")
+  const sourcePath = path.join(formattingVault, "capablegupta", "notes", "Unformatted.md")
   const source =
     "---\ntitle: Messy\npublish: true\n---\n\nText with\n\n[a link](https://example.com)\n\nand more text.\n"
 

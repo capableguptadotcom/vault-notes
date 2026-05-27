@@ -35,7 +35,6 @@ export const defaultContentPageLayout: PageLayout = {
   ],
   left: [
     Component.PageTitle(),
-    Component.SiteNav(),
     Component.Flex({
       components: [
         {
@@ -76,7 +75,6 @@ export const defaultListPageLayout: PageLayout = {
   beforeBody: [Component.Breadcrumbs(), Component.ArticleTitle(), Component.ContentMeta()],
   left: [
     Component.PageTitle(),
-    Component.SiteNav(),
     Component.Flex({
       components: [
         {

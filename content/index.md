@@ -14,22 +14,31 @@ description: Notes, ideas, and projects by Saksham Gupta.
   <img class="garden-portrait" src="/static/saksham-avatar.webp" alt="Portrait of Saksham Gupta" />
 </section>
 
-## Explore
+## Latest
 
-<section class="section-portal" aria-label="Site sections">
-  <a class="section-entry" href="/notes/">
-    <span class="section-title">Notes</span>
-    <span class="section-description">Connected thoughts, works in progress, and public notes from Obsidian.</span>
-    <span class="section-meta">Latest: Welcome</span>
-  </a>
-  <a class="section-entry" href="/writing/">
-    <span class="section-title">Writing</span>
-    <span class="section-description">Technical posts and longer-form essays that are more polished than notes.</span>
-    <span class="section-meta">Ready for the first post</span>
-  </a>
-  <a class="section-entry" href="/clippings/">
-    <span class="section-title">Clippings</span>
-    <span class="section-description">Short excerpts from other people's work, saved with source links and commentary.</span>
-    <span class="section-meta">Ready for the first clipping</span>
-  </a>
+<section class="quiet-latest">
+  <a class="quiet-latest-title" href="/notes/Welcome">Welcome</a>
+  <p class="quiet-meta">May 25, 2026 · Notes</p>
+  <p>How this site turns selected Obsidian notes into public pages while the rest of the vault stays private.</p>
+</section>
+
+## Index
+
+<section class="quiet-index" aria-label="Site index">
+  <div>
+    <h3>Writing</h3>
+    <p class="quiet-empty">Longer technical writing will appear here.</p>
+  </div>
+  <div>
+    <h3>Notes</h3>
+    <ul>
+      <li><a href="/notes/Welcome">Welcome</a></li>
+    </ul>
+  </div>
+  <div>
+    <h3>Clippings</h3>
+    <ul>
+      <li><a href="/clippings/Mindset-Shifts">Mindset Shifts</a></li>
+    </ul>
+  </div>
 </section>

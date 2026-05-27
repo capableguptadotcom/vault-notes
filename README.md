@@ -5,16 +5,17 @@ An Obsidian-first personal website for [capablegupta.com](https://capablegupta.c
 ## How publishing works
 
 ```text
-Obsidian vault -> public-section exporter -> content/{notes,writing,clippings}/ -> GitHub -> GitHub Pages -> capablegupta.com
+Obsidian vault -> capablegupta/ public root -> content/{notes,writing,clippings}/ -> GitHub -> GitHub Pages -> capablegupta.com
 ```
 
 - The local script auto-detects the currently open Obsidian vault. It currently resolves to `tingu-wiki`.
-- Only notes inside `Notes/`, `Writing/`, or `Clippings/` with the Obsidian property `publish: true` are exported.
+- Only notes inside `capablegupta/notes/`, `capablegupta/writing/`, or `capablegupta/clippings/` with the Obsidian property `publish: true` are exported.
 - Only images, PDFs, audio, or video embedded by a published note are exported with it.
 - Vault folders named `Template` or `Templates` are always excluded, even when the note template contains `publish: true`.
 - Quartz applies `Plugin.ExplicitPublish()` again during the build as a second privacy check.
 - For local preview, exported notes are assembled outside the repository in a temporary build directory.
 - For GitHub Pages, `npm run export:github` copies only publishable notes and their referenced assets into `content/notes/`, `content/writing/`, and `content/clippings/`. This repository is public, so never place private content there manually.
+- `npm run dev:vault` and `npm run watch:github` watch only the `capablegupta/` public root, so private vault edits do not trigger site refreshes or deployments.
 
 ## Run locally
 
@@ -36,11 +37,11 @@ npm run publish
 
 `SITE_URL` is the final hostname without `https://`; Quartz uses it for canonical URLs, RSS, and social metadata. GitHub Pages builds use `capablegupta.com`; local builds default to `localhost:8080`.
 
-`npm run dev:vault` opens the local Quartz server and watches the Obsidian vault. Saving a note with `publish: true`, or changing one, automatically refreshes the exported pages used by the preview.
+`npm run dev:vault` opens the local Quartz server and watches the Obsidian vault's `capablegupta/` public root. Saving a public-root note with `publish: true`, or changing one, automatically refreshes the exported pages used by the preview.
 
 ## Write in Obsidian
 
-Place public notes in one of the approved vault folders and add these properties:
+Place public notes in one of the approved folders under `capablegupta/` and add these properties:
 
 ```yaml
 ---
@@ -57,13 +58,13 @@ Write normally after that. Wikilinks such as `[[Another published note]]`, tags,
 
 The included templates in [obsidian-template/](obsidian-template/) cover notes, writing, and clippings. Use Obsidian's insert-template command to create publish-ready notes.
 
-Public sections map directly from vault folders to site URLs:
+Public sections map from the private `capablegupta/` root to clean public URLs:
 
-- `Notes/Welcome.md` becomes `/notes/Welcome`.
-- `Writing/My Post.md` becomes `/writing/My-Post`.
-- `Clippings/Useful Article.md` becomes `/clippings/Useful-Article`.
+- `capablegupta/notes/Welcome.md` becomes `/notes/Welcome`.
+- `capablegupta/writing/My Post.md` becomes `/writing/My-Post`.
+- `capablegupta/clippings/Useful Article.md` becomes `/clippings/Useful-Article`.
 
-The old `Garden/` source folder is retired. Publishing now fails with a migration message if a `publish: true` note still lives there or outside the approved section folders.
+The old `Garden/` source folder is retired. Publishing now fails with a migration message if a `publish: true` note still lives there, in root-level `Notes/`, `Writing/`, `Clippings/`, or anywhere outside `capablegupta/`.
 
 ## Publish to GitHub Pages
 
@@ -88,7 +89,7 @@ To publish automatically while writing, keep this process running:
 npm run watch:github
 ```
 
-When started, the watcher publishes any opted-in change made while it was offline. After that, saving a public note causes its sanitized export to be committed and pushed after a short debounce. Saving only private notes produces no public commit.
+When started, the watcher publishes any opted-in public-root change made while it was offline. After that, saving a file under `capablegupta/` causes its sanitized export to be committed and pushed after a short debounce when public output changed. Saving private notes elsewhere in the vault does not trigger the watcher.
 
 Published Markdown is formatted during export before the watcher creates its Git commit. The GitHub Pages workflow also normalizes files in the three public section folders before verification as a defensive fallback for manual public-note commits.
 

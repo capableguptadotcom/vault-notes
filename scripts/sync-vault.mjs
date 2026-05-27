@@ -8,6 +8,7 @@ import prettier from "prettier"
 const projectRoot = path.resolve(import.meta.dirname, "..")
 const curatedContentRoot = path.join(projectRoot, "content")
 const defaultContentRoot = path.join(os.tmpdir(), `${path.basename(projectRoot)}-published-content`)
+const publicRootFolder = "capablegupta"
 const publicCollections = [
   {
     description: "Personal notes, works in progress, and connected ideas.",
@@ -163,25 +164,39 @@ function relativePathSegments(relativePath) {
 
 function publicRelativePath(relativePath, collection) {
   const segments = relativePathSegments(relativePath)
-  return segments[0]?.toLowerCase() === collection.sourceFolder
-    ? segments.slice(1).join(path.sep)
+  return segments[0]?.toLowerCase() === publicRootFolder &&
+    segments[1]?.toLowerCase() === collection.sourceFolder
+    ? segments.slice(2).join(path.sep)
     : relativePath
 }
 
 function publicCollectionForNote(note) {
-  const [sourceFolder] = relativePathSegments(note.relativePath)
+  const [rootFolder, sourceFolder] = relativePathSegments(note.relativePath)
+  const normalizedRootFolder = rootFolder?.toLowerCase()
   const normalizedSourceFolder = sourceFolder?.toLowerCase()
 
-  if (normalizedSourceFolder === "garden") {
+  if (normalizedRootFolder === "garden") {
     throw new Error(
-      `Published note is still in the retired Garden/ folder: ${note.relativePath}. Rename Garden/ to Notes/ in your Obsidian vault before publishing.`,
+      `Published note is still in the retired Garden/ folder: ${note.relativePath}. Move it under capablegupta/notes, capablegupta/writing, or capablegupta/clippings before publishing.`,
+    )
+  }
+
+  if (collectionBySourceFolder.has(normalizedRootFolder)) {
+    throw new Error(
+      `Published note must live under capablegupta/notes, capablegupta/writing, or capablegupta/clippings: ${note.relativePath}`,
+    )
+  }
+
+  if (normalizedRootFolder !== publicRootFolder) {
+    throw new Error(
+      `Published note must live under the capablegupta/ public root: ${note.relativePath}`,
     )
   }
 
   const collection = collectionBySourceFolder.get(normalizedSourceFolder)
   if (!collection) {
     throw new Error(
-      `Published note must live under Notes/, Writing/, or Clippings/: ${note.relativePath}`,
+      `Published note must live under capablegupta/notes, capablegupta/writing, or capablegupta/clippings: ${note.relativePath}`,
     )
   }
 
@@ -360,6 +375,11 @@ export async function syncVault(
     contentRoot,
     vaultRoot,
   }
+}
+
+export async function publicRoot(explicitVault) {
+  const vaultRoot = await findVault(explicitVault)
+  return path.join(vaultRoot, publicRootFolder)
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

@@ -1,11 +1,13 @@
 import { spawn } from "node:child_process"
+import fs from "node:fs"
 import path from "node:path"
 import process from "node:process"
 import chokidar from "chokidar"
-import { findVault, syncVault } from "./sync-vault.mjs"
+import { findVault, publicRoot, syncVault } from "./sync-vault.mjs"
 
 const projectRoot = path.resolve(import.meta.dirname, "..")
 const vaultRoot = await findVault(process.argv[2])
+const watchedRoot = await publicRoot(vaultRoot)
 const ignored = /(^|[/\\])(?:\.git|\.obsidian|\.trash|templates?)([/\\]|$)/i
 let syncRunning = false
 let syncQueued = false
@@ -32,7 +34,11 @@ async function refreshContent() {
 }
 
 await refreshContent()
-console.log(`Watching published note changes in ${vaultRoot}`)
+if (!fs.existsSync(watchedRoot)) {
+  throw new Error(`Public root folder not found: ${watchedRoot}`)
+}
+
+console.log(`Watching published note changes in ${watchedRoot}`)
 
 const preview = spawn(
   process.execPath,
@@ -50,7 +56,7 @@ const preview = spawn(
   },
 )
 
-const watcher = chokidar.watch(vaultRoot, {
+const watcher = chokidar.watch(watchedRoot, {
   awaitWriteFinish: {
     pollInterval: 100,
     stabilityThreshold: 250,
@@ -60,7 +66,7 @@ const watcher = chokidar.watch(vaultRoot, {
 })
 
 watcher.on("all", async (eventName, changedPath) => {
-  console.log(`Vault ${eventName}: ${path.relative(vaultRoot, changedPath)}`)
+  console.log(`Public root ${eventName}: ${path.relative(watchedRoot, changedPath)}`)
   await refreshContent()
 })
 
