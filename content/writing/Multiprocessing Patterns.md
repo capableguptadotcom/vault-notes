@@ -27,7 +27,6 @@ https://heyashy.medium.com/blazing-fast-etls-with-simultaneous-multiprocessing-a
   - asycio part of python lib , provide infra for writing concurrent code using `async/await` .
   - `async` is just a keyword that indicates that a function is a `coroutine` function which can be used with `**await**` to pause the execution of the coroutine until a result is available
   - `asyncio` provides additional functionality for managing coroutines, such as an event loop, which is responsible for scheduling and executing coroutines, and various APIs for performing I/O operations asynchronously
-
   ```Python
   import asyncio
 
@@ -38,10 +37,8 @@ https://heyashy.medium.com/blazing-fast-etls-with-simultaneous-multiprocessing-a
 
   asyncio.run(my_coroutine())
   ```
-
   In this example, the `**asyncio.run()**` function is used to run the `**my_coroutine()**` coroutine function. The `**await asyncio.sleep(1)**` line pauses the execution of the coroutine for one second, allowing other coroutines to run in the meantime.
   `**yield**`: In the context of generators, `**yield**` is used to produce a value to the caller and suspend the execution of the generator function until the next value is requested. When used in asynchronous generators, it allows the generator to produce values asynchronously. However, it does not provide the same level of control over asynchronous code execution as `**await**` does
-
   ```Python
   # examples of async programming
   import asyncio
@@ -82,7 +79,6 @@ https://heyashy.medium.com/blazing-fast-etls-with-simultaneous-multiprocessing-a
 
   asyncio.run(fetch_data())
   ```
-
 - process ( w.r.t to concurrent futures and direct threading library ),
   - heard about in terms of cpu intensive tasks , where overhead doesnt bother you that much , but yeah explore on it , see why we even need it .
 
