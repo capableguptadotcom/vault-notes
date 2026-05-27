@@ -49,11 +49,11 @@ export const defaultContentPageLayout: PageLayout = {
   right: [
     Component.ConditionalRender({
       component: Component.RecentNotes({
-        title: "Writing",
+        title: "Latest",
         limit: 7,
         linkToMore: false,
         showTags: false,
-        filter: (page) => page.slug !== "index",
+        filter: (page) => page.slug !== "index" && !page.slug?.endsWith("/index"),
       }),
       condition: (page) => page.fileData.slug === "index",
     }),
@@ -64,7 +64,7 @@ export const defaultContentPageLayout: PageLayout = {
         linkToMore: false,
         showTags: false,
         excludeCurrent: true,
-        filter: (page) => page.slug !== "index",
+        filter: (page) => page.slug !== "index" && !page.slug?.endsWith("/index"),
       }),
       condition: (page) => page.fileData.slug !== "index",
     }),

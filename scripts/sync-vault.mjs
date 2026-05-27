@@ -8,8 +8,33 @@ import prettier from "prettier"
 const projectRoot = path.resolve(import.meta.dirname, "..")
 const curatedContentRoot = path.join(projectRoot, "content")
 const defaultContentRoot = path.join(os.tmpdir(), `${path.basename(projectRoot)}-published-content`)
-const githubGardenRoot = path.join(curatedContentRoot, "garden")
-const publicCollectionFolder = "garden"
+const publicCollections = [
+  {
+    description: "Personal notes, works in progress, and connected ideas.",
+    outputFolder: "notes",
+    sourceFolder: "notes",
+    title: "Notes",
+  },
+  {
+    description: "Technical posts and longer-form public writing.",
+    outputFolder: "writing",
+    sourceFolder: "writing",
+    title: "Writing",
+  },
+  {
+    description: "Short excerpts from other people's work with source links and commentary.",
+    outputFolder: "clippings",
+    sourceFolder: "clippings",
+    title: "Clippings",
+  },
+]
+const collectionBySourceFolder = new Map(
+  publicCollections.map((collection) => [collection.sourceFolder, collection]),
+)
+const managedContentFolders = new Set([
+  ...publicCollections.map((collection) => collection.outputFolder),
+  "garden",
+])
 const ignoredFolders = new Set([
   ".git",
   ".obsidian",
@@ -31,6 +56,21 @@ const safeAssetExtensions = new Set([
   ".webm",
   ".webp",
 ])
+
+function collectionIndexMarkdown(collection) {
+  return `---
+title: ${collection.title}
+publish: true
+created: 2026-05-27
+published: 2026-05-27
+description: ${collection.description}
+tags:
+  - ${collection.outputFolder}
+---
+
+${collection.description}
+`
+}
 
 export async function findVault(explicit = process.env.OBSIDIAN_VAULT) {
   if (explicit) return path.resolve(explicit)
@@ -99,16 +139,16 @@ function resolveAsset(target, notePath, vaultRoot, allFiles) {
   return matches.length === 1 ? matches[0] : undefined
 }
 
-async function copyIntoContent(file, contentRoot, prefix = "") {
-  const destination = path.join(contentRoot, prefix, publicRelativePath(file.relativePath))
+async function copyIntoContent(file, contentRoot, collection) {
+  const destination = path.join(contentRoot, publicRelativePath(file.relativePath, collection))
   await fs.mkdir(path.dirname(destination), { recursive: true })
   await fs.copyFile(file.absolutePath, destination)
   const sourceStats = await fs.stat(file.absolutePath)
   await fs.utimes(destination, sourceStats.atime, sourceStats.mtime)
 }
 
-async function copyNoteIntoContent(file, contentRoot, prefix = "") {
-  const destination = path.join(contentRoot, prefix, publicRelativePath(file.relativePath))
+async function copyNoteIntoContent(file, contentRoot, collection) {
+  const destination = path.join(contentRoot, publicRelativePath(file.relativePath, collection))
   const markdown = await fs.readFile(file.absolutePath, "utf8")
   const formatted = await prettier.format(markdown, { filepath: destination })
   await fs.mkdir(path.dirname(destination), { recursive: true })
@@ -117,31 +157,87 @@ async function copyNoteIntoContent(file, contentRoot, prefix = "") {
   await fs.utimes(destination, sourceStats.atime, sourceStats.mtime)
 }
 
-function publicRelativePath(relativePath) {
-  const segments = relativePath.split(path.sep)
-  return segments[0]?.toLowerCase() === publicCollectionFolder
+function relativePathSegments(relativePath) {
+  return relativePath.split(path.sep).filter(Boolean)
+}
+
+function publicRelativePath(relativePath, collection) {
+  const segments = relativePathSegments(relativePath)
+  return segments[0]?.toLowerCase() === collection.sourceFolder
     ? segments.slice(1).join(path.sep)
     : relativePath
 }
 
-function ensureUniquePublicPaths(files) {
+function publicCollectionForNote(note) {
+  const [sourceFolder] = relativePathSegments(note.relativePath)
+  const normalizedSourceFolder = sourceFolder?.toLowerCase()
+
+  if (normalizedSourceFolder === "garden") {
+    throw new Error(
+      `Published note is still in the retired Garden/ folder: ${note.relativePath}. Rename Garden/ to Notes/ in your Obsidian vault before publishing.`,
+    )
+  }
+
+  const collection = collectionBySourceFolder.get(normalizedSourceFolder)
+  if (!collection) {
+    throw new Error(
+      `Published note must live under Notes/, Writing/, or Clippings/: ${note.relativePath}`,
+    )
+  }
+
+  return collection
+}
+
+function isManagedContentPath(relativePath) {
+  const segments = relativePath.split(path.sep)
+  return managedContentFolders.has(segments[0]?.toLowerCase())
+}
+
+function ensureUniquePublicPaths(files, collection) {
   const publicPaths = new Map()
   for (const file of files) {
-    const publicPath = publicRelativePath(file.relativePath)
+    const publicPath = publicRelativePath(file.relativePath, collection)
     const existing = publicPaths.get(publicPath.toLowerCase())
     if (existing && existing !== file.relativePath) {
       throw new Error(
-        `Public output path collision: "${existing}" and "${file.relativePath}" both map to "${publicPath}".`,
+        `Public output path collision in ${collection.title}: "${existing}" and "${file.relativePath}" both map to "${publicPath}".`,
       )
     }
     publicPaths.set(publicPath.toLowerCase(), file.relativePath)
   }
 }
 
+function emptyPublishedContent() {
+  return new Map(
+    publicCollections.map((collection) => [
+      collection.outputFolder,
+      { collection, publishedNotes: [], selectedAssets: new Map() },
+    ]),
+  )
+}
+
+function summarizePublishedContent(collections) {
+  const summary = {
+    assetCount: 0,
+    collectionCounts: {},
+    noteCount: 0,
+  }
+
+  for (const [outputFolder, group] of collections) {
+    const noteCount = group.publishedNotes.length
+    const assetCount = group.selectedAssets.size
+    summary.noteCount += noteCount
+    summary.assetCount += assetCount
+    summary.collectionCounts[outputFolder] = { assetCount, noteCount }
+  }
+
+  return summary
+}
+
 async function copyCuratedContent(contentRoot) {
   const contentFiles = await collectFiles(curatedContentRoot, curatedContentRoot)
   for (const file of contentFiles) {
-    if (file.relativePath.toLowerCase().startsWith(`garden${path.sep}`)) continue
+    if (isManagedContentPath(file.relativePath)) continue
     const destination = path.join(contentRoot, file.relativePath)
     await fs.mkdir(path.dirname(destination), { recursive: true })
     await fs.copyFile(file.absolutePath, destination)
@@ -157,55 +253,85 @@ async function clearContentRoot(contentRoot) {
   }
 }
 
+async function resetManagedContentRoots(contentRoot) {
+  for (const collection of publicCollections) {
+    await clearContentRoot(path.join(contentRoot, collection.outputFolder))
+  }
+
+  await fs.rm(path.join(contentRoot, "garden"), { recursive: true, force: true })
+}
+
 async function selectPublishedContent(vaultRoot) {
   const allFiles = await collectFiles(vaultRoot, vaultRoot)
   const markdownFiles = allFiles.filter(
     (file) => path.extname(file.relativePath).toLowerCase() === ".md",
   )
-  const publishedNotes = []
-  const selectedAssets = new Map()
+  const collections = emptyPublishedContent()
 
   for (const note of markdownFiles) {
     const markdown = await fs.readFile(note.absolutePath, "utf8")
     if (matter(markdown).data.publish !== true) continue
-    publishedNotes.push(note)
+    const collection = publicCollectionForNote(note)
+    const group = collections.get(collection.outputFolder)
+    group.publishedNotes.push(note)
 
     for (const target of embeddedAssets(markdown)) {
       if (!isPublishableAsset(target)) continue
       const asset = resolveAsset(target, note.absolutePath, vaultRoot, allFiles)
-      if (asset) selectedAssets.set(asset.relativePath.toLowerCase(), asset)
+      if (asset) group.selectedAssets.set(asset.relativePath.toLowerCase(), asset)
       else console.warn(`Referenced asset not found: ${target} (from ${note.relativePath})`)
     }
   }
 
-  ensureUniquePublicPaths([...publishedNotes, ...selectedAssets.values()])
+  for (const group of collections.values()) {
+    ensureUniquePublicPaths(
+      [...group.publishedNotes, ...group.selectedAssets.values()],
+      group.collection,
+    )
+  }
 
-  return { publishedNotes, selectedAssets }
+  return collections
 }
 
-async function writePublicContent(contentRoot, publishedNotes, selectedAssets, prefix = "") {
-  for (const note of publishedNotes) await copyNoteIntoContent(note, contentRoot, prefix)
-  for (const asset of selectedAssets.values()) await copyIntoContent(asset, contentRoot, prefix)
+async function writeCollectionIndex(contentRoot, collection) {
+  const destination = path.join(contentRoot, "index.md")
+  await fs.mkdir(path.dirname(destination), { recursive: true })
+  await fs.writeFile(destination, collectionIndexMarkdown(collection))
 }
 
-export async function exportGithubGarden(explicitVault, explicitGardenRoot = githubGardenRoot) {
+async function writeCollectionContent(contentRoot, group) {
+  await writeCollectionIndex(contentRoot, group.collection)
+  for (const note of group.publishedNotes)
+    await copyNoteIntoContent(note, contentRoot, group.collection)
+  for (const asset of group.selectedAssets.values()) {
+    await copyIntoContent(asset, contentRoot, group.collection)
+  }
+}
+
+async function writePublicContent(contentRoot, collections) {
+  for (const group of collections.values()) {
+    await writeCollectionContent(path.join(contentRoot, group.collection.outputFolder), group)
+  }
+}
+
+export async function exportGithubContent(explicitVault, explicitContentRoot = curatedContentRoot) {
   const vaultRoot = await findVault(explicitVault)
-  const gardenRoot = path.resolve(explicitGardenRoot)
-  const { publishedNotes, selectedAssets } = await selectPublishedContent(vaultRoot)
+  const contentRoot = path.resolve(explicitContentRoot)
+  const collections = await selectPublishedContent(vaultRoot)
+  const summary = summarizePublishedContent(collections)
 
-  await clearContentRoot(gardenRoot)
-  await writePublicContent(gardenRoot, publishedNotes, selectedAssets)
+  await resetManagedContentRoots(contentRoot)
+  await writePublicContent(contentRoot, collections)
 
   console.log(`Vault: ${vaultRoot}`)
-  console.log(`GitHub Pages export: ${gardenRoot}`)
+  console.log(`GitHub Pages export: ${contentRoot}`)
   console.log(
-    `Exported ${publishedNotes.length} public note(s) and ${selectedAssets.size} referenced asset(s).`,
+    `Exported ${summary.noteCount} public note(s) and ${summary.assetCount} referenced asset(s).`,
   )
 
   return {
-    assetCount: selectedAssets.size,
-    gardenRoot,
-    noteCount: publishedNotes.length,
+    ...summary,
+    contentRoot,
     vaultRoot,
   }
 }
@@ -216,22 +342,22 @@ export async function syncVault(
 ) {
   const vaultRoot = await findVault(explicitVault)
   const contentRoot = explicitContentRoot ? path.resolve(explicitContentRoot) : defaultContentRoot
-  const { publishedNotes, selectedAssets } = await selectPublishedContent(vaultRoot)
+  const collections = await selectPublishedContent(vaultRoot)
+  const summary = summarizePublishedContent(collections)
 
   await clearContentRoot(contentRoot)
   await copyCuratedContent(contentRoot)
-  await writePublicContent(contentRoot, publishedNotes, selectedAssets, "garden")
+  await writePublicContent(contentRoot, collections)
 
   console.log(`Vault: ${vaultRoot}`)
   console.log(`Quartz content: ${contentRoot}`)
   console.log(
-    `Published ${publishedNotes.length} note(s) and ${selectedAssets.size} referenced asset(s).`,
+    `Published ${summary.noteCount} note(s) and ${summary.assetCount} referenced asset(s).`,
   )
 
   return {
-    assetCount: selectedAssets.size,
+    ...summary,
     contentRoot,
-    noteCount: publishedNotes.length,
     vaultRoot,
   }
 }

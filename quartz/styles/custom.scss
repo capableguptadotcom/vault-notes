@@ -150,24 +150,37 @@ body {
   margin: 0;
 }
 
-.garden-latest {
+.section-portal {
+  display: grid;
+  gap: 1.35rem;
   margin-bottom: 0.7rem;
 }
 
-.garden-latest-title {
+.section-entry {
+  border-top: 1px solid var(--garden-rule);
+  color: var(--darkgray);
+  display: grid;
+  gap: 0.35rem;
+  padding-top: 1.25rem;
+}
+
+.section-entry:hover .section-title {
+  color: var(--secondary);
+}
+
+.section-title {
   color: var(--dark);
-  display: block;
   font-size: 1.06rem;
   font-weight: 600;
   letter-spacing: -0.03em;
-  margin-bottom: 0.2rem;
 }
 
-.garden-latest p {
-  margin: 0.45rem 0;
+.section-description {
+  color: var(--darkgray);
+  line-height: 1.55;
 }
 
-.garden-latest .garden-meta {
+.section-meta {
   color: var(--gray);
   font-size: 0.94rem;
 }

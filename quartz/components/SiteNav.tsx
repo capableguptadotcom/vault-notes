@@ -5,7 +5,9 @@ const SiteNav: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
   return (
     <nav class={classNames(displayClass, "site-nav")} aria-label="Site navigation">
       <a href="/#about">About</a>
-      <a href="/garden/Welcome">Now</a>
+      <a href="/notes/">Notes</a>
+      <a href="/writing/">Writing</a>
+      <a href="/clippings/">Clippings</a>
     </nav>
   )
 }
@@ -13,7 +15,9 @@ const SiteNav: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
 SiteNav.css = `
 .site-nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
+  justify-content: flex-end;
   margin-left: auto;
 }
 

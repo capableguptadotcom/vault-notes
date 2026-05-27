@@ -1,6 +1,6 @@
 {
   "name": "saksham-gupta-site",
-  "description": "Obsidian-powered digital garden for capablegupta.com",
+  "description": "Obsidian-powered personal site for capablegupta.com",
   "private": true,
   "version": "4.5.2",
   "type": "module",

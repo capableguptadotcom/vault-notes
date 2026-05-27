@@ -5,6 +5,8 @@ created: 2026-05-25
 tags:
   - anxiety
   - goals
+aliases:
+  - garden/Mindset-Shifts
 ---
 
 For the most part, we can’t change the world. We can’t change the fundamental facts of existence–like the fact that [we’re going to die](https://dailystoic.com/memento-mori/). We can’t change other people.

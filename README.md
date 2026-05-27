@@ -1,20 +1,20 @@
 # Saksham Gupta
 
-An Obsidian-first personal website for [capablegupta.com](https://capablegupta.com), built with [Quartz 4](https://quartz.jzhao.xyz/). It is designed to feel close to the Minimal theme: quiet typography, linked notes, backlinks, search, and a light personal landing page.
+An Obsidian-first personal website for [capablegupta.com](https://capablegupta.com), built with [Quartz 4](https://quartz.jzhao.xyz/). It is designed to feel close to the Minimal theme: quiet typography, linked notes, technical writing, clippings, backlinks, search, and a light personal landing page.
 
 ## How publishing works
 
 ```text
-Obsidian vault -> public-note exporter -> content/garden/ -> GitHub -> GitHub Pages -> capablegupta.com
+Obsidian vault -> public-section exporter -> content/{notes,writing,clippings}/ -> GitHub -> GitHub Pages -> capablegupta.com
 ```
 
 - The local script auto-detects the currently open Obsidian vault. It currently resolves to `tingu-wiki`.
-- Only notes with the Obsidian property `publish: true` are exported.
+- Only notes inside `Notes/`, `Writing/`, or `Clippings/` with the Obsidian property `publish: true` are exported.
 - Only images, PDFs, audio, or video embedded by a published note are exported with it.
 - Vault folders named `Template` or `Templates` are always excluded, even when the note template contains `publish: true`.
 - Quartz applies `Plugin.ExplicitPublish()` again during the build as a second privacy check.
 - For local preview, exported notes are assembled outside the repository in a temporary build directory.
-- For GitHub Pages, `npm run export:github` copies only publishable notes and their referenced assets into `content/garden/`. This repository is public, so never place private content there manually.
+- For GitHub Pages, `npm run export:github` copies only publishable notes and their referenced assets into `content/notes/`, `content/writing/`, and `content/clippings/`. This repository is public, so never place private content there manually.
 
 ## Run locally
 
@@ -40,7 +40,7 @@ npm run publish
 
 ## Write in Obsidian
 
-Add these properties to any note that should appear on the website:
+Place public notes in one of the approved vault folders and add these properties:
 
 ```yaml
 ---
@@ -55,9 +55,15 @@ tags:
 
 Write normally after that. Wikilinks such as `[[Another published note]]`, tags, callouts, and embedded images are understood by Quartz. A link to a private note is not published; mark the linked note public too if it should resolve on the website.
 
-The included template at [obsidian-template/Published Note.md](obsidian-template/Published%20Note.md) is also installed in `tingu-wiki/Templates/Published Note.md`, and that vault's Templates core plugin is configured to use `Templates`. Use Obsidian's insert-template command to create publish-ready notes.
+The included templates in [obsidian-template/](obsidian-template/) cover notes, writing, and clippings. Use Obsidian's insert-template command to create publish-ready notes.
 
-For new public writing, place notes in the vault's `Garden/` folder. The publishing pipeline removes that organizational folder from the public path, so `Garden/Welcome.md` becomes `/garden/Welcome` rather than `/garden/Garden/Welcome`. Published notes outside that folder continue to keep their folder structure.
+Public sections map directly from vault folders to site URLs:
+
+- `Notes/Welcome.md` becomes `/notes/Welcome`.
+- `Writing/My Post.md` becomes `/writing/My-Post`.
+- `Clippings/Useful Article.md` becomes `/clippings/Useful-Article`.
+
+The old `Garden/` source folder is retired. Publishing now fails with a migration message if a `publish: true` note still lives there or outside the approved section folders.
 
 ## Publish to GitHub Pages
 
@@ -72,7 +78,7 @@ npm run publish:github
 That command:
 
 1. Reads the open `tingu-wiki` Obsidian vault.
-2. Exports only notes with `publish: true` and media referenced by them into `content/garden/`.
+2. Exports only approved section notes with `publish: true` and media referenced by them into `content/notes/`, `content/writing/`, and `content/clippings/`.
 3. Creates and pushes a Git commit only when that public export changed.
 4. Triggers the GitHub Pages deployment workflow.
 
@@ -84,7 +90,7 @@ npm run watch:github
 
 When started, the watcher publishes any opted-in change made while it was offline. After that, saving a public note causes its sanitized export to be committed and pushed after a short debounce. Saving only private notes produces no public commit.
 
-Published Markdown is formatted during export before the watcher creates its Git commit. The GitHub Pages workflow also normalizes files in `content/garden/` before verification as a defensive fallback for manual public-note commits.
+Published Markdown is formatted during export before the watcher creates its Git commit. The GitHub Pages workflow also normalizes files in the three public section folders before verification as a defensive fallback for manual public-note commits.
 
 On this Windows computer, install the watcher as a background task that begins at sign-in:
 

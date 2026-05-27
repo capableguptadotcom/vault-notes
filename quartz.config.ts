@@ -72,7 +72,7 @@ const config: QuartzConfig = {
       Plugin.Description(),
       Plugin.Latex({ renderEngine: "katex" }),
     ],
-    // A note must explicitly opt into the public garden.
+    // A note must explicitly opt into the public site.
     filters: [Plugin.ExplicitPublish()],
     emitters: [
       Plugin.AliasRedirects(),
