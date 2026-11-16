@@ -33,16 +33,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Normalize published Markdown
-        run: npx prettier content/notes content/writing content/clippings --write
-
       - name: Verify site code and privacy exporter
         run: |
           npm run check
           npm test
 
       - name: Build site for the custom domain
-        run: node quartz/bootstrap-cli.mjs build
+        run: npm run build:github
         env:
           SITE_URL: capablegupta.com
 

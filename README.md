@@ -5,17 +5,13 @@ An Obsidian-first personal website for [capablegupta.com](https://capablegupta.c
 ## How publishing works
 
 ```text
-Obsidian vault -> capablegupta/ public root -> content/{notes,writing,clippings}/ -> GitHub -> GitHub Pages -> capablegupta.com
+Akshara -> capablegupta/ -> Quartz Syncer -> published-notes/ -> GitHub Pages -> capablegupta.com
 ```
 
-- The local script auto-detects the currently open Obsidian vault. It currently resolves to `tingu-wiki`.
-- Only notes inside `capablegupta/notes/`, `capablegupta/writing/`, or `capablegupta/clippings/` with the Obsidian property `publish: true` are exported.
-- Only images, PDFs, audio, or video embedded by a published note are exported with it.
-- Vault folders named `Template` or `Templates` are always excluded, even when the note template contains `publish: true`.
-- Quartz applies `Plugin.ExplicitPublish()` again during the build as a second privacy check.
-- For local preview, exported notes are assembled outside the repository in a temporary build directory.
-- For GitHub Pages, `npm run export:github` copies only publishable notes and their referenced assets into `content/notes/`, `content/writing/`, and `content/clippings/`. This repository is public, so never place private content there manually.
-- `npm run dev:vault` and `npm run watch:github` watch only the `capablegupta/` public root, so private vault edits do not trigger site refreshes or deployments.
+- Put public notes in `capablegupta/notes/`, `capablegupta/writing/`, or `capablegupta/clippings/` and set `publish: true`.
+- Quartz Syncer can send opted-in notes and their embedded media anywhere under its configured vault root. Keep private notes, private media, and publish-ready templates outside `capablegupta/` because the GitHub repository is public.
+- The GitHub Pages build combines `published-notes/` with the landing pages in `content/` and applies `Plugin.ExplicitPublish()`.
+- The local preview exporter uses the open vault and excludes `Template` and `Templates` folders. It assembles the export in a temporary build directory.
 
 ## Run locally
 
@@ -26,6 +22,8 @@ npm ci
 npm run publish
 npm run dev:vault
 ```
+
+Run `npm run build:github` to preview the checked-in GitHub content without opening the vault.
 
 On Windows, `npm run publish` uses the open Obsidian vault registered in the Obsidian desktop app. To publish from another vault or from a server:
 
@@ -64,46 +62,27 @@ Public sections map from the private `capablegupta/` root to clean public URLs:
 - `capablegupta/writing/My Post.md` becomes `/writing/My-Post`.
 - `capablegupta/clippings/Useful Article.md` becomes `/clippings/Useful-Article`.
 
-The old `Garden/` source folder is retired. Publishing now fails with a migration message if a `publish: true` note still lives there, in root-level `Notes/`, `Writing/`, `Clippings/`, or anywhere outside `capablegupta/`.
+The old `Garden/` source folder is retired. The local exporter reports a migration error for notes marked `publish: true` outside the three approved sections.
 
 ## Publish to GitHub Pages
 
-This repository stores the website source and a sanitized public copy of your published notes. Your full Obsidian vault is not pushed to GitHub.
+Configure [Quartz Syncer](https://community.obsidian.md/plugins/quartz-syncer) in Akshara with these settings.
 
-To publish current opted-in notes manually:
+| Setting                      | Value                                                   |
+| ---------------------------- | ------------------------------------------------------- |
+| Publish target               | Remote                                                  |
+| Remote URL                   | `https://github.com/capableguptadotcom/vault-notes.git` |
+| Branch                       | `main`                                                  |
+| Vault root folder            | `capablegupta`                                          |
+| Destination content folder   | `published-notes`                                       |
+| Publish property             | `publish`                                               |
+| Include all notes by default | Off                                                     |
 
-```powershell
-npm run publish:github
-```
+Store a repository-scoped GitHub token in the plugin's Access token setting. With a desktop auto-publish interval set, Quartz Syncer checks for changes while Obsidian is running. Set `publish: true` to publish a note or change it to `false` to remove it on the next run.
 
-That command:
+The destination must be `published-notes`. Quartz Syncer can delete unmatched files in that folder. The homepage and the three section landing pages live under `content/` and take precedence during the build.
 
-1. Reads the open `tingu-wiki` Obsidian vault.
-2. Exports only approved section notes with `publish: true` and media referenced by them into `content/notes/`, `content/writing/`, and `content/clippings/`.
-3. Creates and pushes a Git commit only when that public export changed.
-4. Triggers the GitHub Pages deployment workflow.
-
-To publish automatically while writing, keep this process running:
-
-```powershell
-npm run watch:github
-```
-
-When started, the watcher publishes any opted-in public-root change made while it was offline. After that, saving a file under `capablegupta/` causes its sanitized export to be committed and pushed after a short debounce when public output changed. Saving private notes elsewhere in the vault does not trigger the watcher.
-
-Published Markdown is formatted during export before the watcher creates its Git commit. The GitHub Pages workflow also normalizes files in the three public section folders before verification as a defensive fallback for manual public-note commits.
-
-On this Windows computer, install the watcher as a background task that begins at sign-in:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\install-windows-publisher.ps1
-```
-
-Its log is stored at `%LOCALAPPDATA%\CapableGuptaSite\publisher.log`. To turn background publishing off later:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\uninstall-windows-publisher.ps1
-```
+`npm run publish:github` remains available for a manual export to the same `published-notes/` folder.
 
 The workflow at [.github/workflows/deploy-pages.yml](.github/workflows/deploy-pages.yml) runs tests, builds Quartz with `SITE_URL=capablegupta.com`, and deploys the generated static site through GitHub Pages.
 
@@ -183,7 +162,6 @@ Without an Obsidian Sync subscription, [Syncthing](https://docs.syncthing.net/in
 - [scripts/sync-vault.mjs](scripts/sync-vault.mjs): opt-in note and attachment export.
 - [scripts/publish-github.mjs](scripts/publish-github.mjs): export, commit, and push public-note updates.
 - [scripts/watch-publish-github.mjs](scripts/watch-publish-github.mjs): publish opted-in changes automatically while writing.
-- [scripts/install-windows-publisher.ps1](scripts/install-windows-publisher.ps1): start the publisher automatically after Windows sign-in.
 - [quartz.config.ts](quartz.config.ts): title, domain, publishing filter, typography, and colors.
 - [quartz.layout.ts](quartz.layout.ts): navigation, recent notes, graph, backlinks, and footer.
 - [quartz/styles/custom.scss](quartz/styles/custom.scss): Minimal-inspired presentation.

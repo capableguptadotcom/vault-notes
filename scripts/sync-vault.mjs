@@ -7,6 +7,7 @@ import prettier from "prettier"
 
 const projectRoot = path.resolve(import.meta.dirname, "..")
 const curatedContentRoot = path.join(projectRoot, "content")
+const githubContentRoot = path.join(projectRoot, "published-notes")
 const defaultContentRoot = path.join(os.tmpdir(), `${path.basename(projectRoot)}-published-content`)
 const publicRootFolder = "capablegupta"
 const publicCollections = [
@@ -315,7 +316,6 @@ async function writeCollectionIndex(contentRoot, collection) {
 }
 
 async function writeCollectionContent(contentRoot, group) {
-  await writeCollectionIndex(contentRoot, group.collection)
   for (const note of group.publishedNotes)
     await copyNoteIntoContent(note, contentRoot, group.collection)
   for (const asset of group.selectedAssets.values()) {
@@ -323,20 +323,22 @@ async function writeCollectionContent(contentRoot, group) {
   }
 }
 
-async function writePublicContent(contentRoot, collections) {
+async function writePublicContent(contentRoot, collections, includeIndexes) {
   for (const group of collections.values()) {
-    await writeCollectionContent(path.join(contentRoot, group.collection.outputFolder), group)
+    const sectionRoot = path.join(contentRoot, group.collection.outputFolder)
+    if (includeIndexes) await writeCollectionIndex(sectionRoot, group.collection)
+    await writeCollectionContent(sectionRoot, group)
   }
 }
 
-export async function exportGithubContent(explicitVault, explicitContentRoot = curatedContentRoot) {
+export async function exportGithubContent(explicitVault, explicitContentRoot = githubContentRoot) {
   const vaultRoot = await findVault(explicitVault)
   const contentRoot = path.resolve(explicitContentRoot)
   const collections = await selectPublishedContent(vaultRoot)
   const summary = summarizePublishedContent(collections)
 
   await resetManagedContentRoots(contentRoot)
-  await writePublicContent(contentRoot, collections)
+  await writePublicContent(contentRoot, collections, false)
 
   console.log(`Vault: ${vaultRoot}`)
   console.log(`GitHub Pages export: ${contentRoot}`)
@@ -362,7 +364,7 @@ export async function syncVault(
 
   await clearContentRoot(contentRoot)
   await copyCuratedContent(contentRoot)
-  await writePublicContent(contentRoot, collections)
+  await writePublicContent(contentRoot, collections, true)
 
   console.log(`Vault: ${vaultRoot}`)
   console.log(`Quartz content: ${contentRoot}`)

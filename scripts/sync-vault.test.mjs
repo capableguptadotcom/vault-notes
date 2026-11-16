@@ -179,16 +179,16 @@ test("exports only opted-in content for a public GitHub Pages repository", async
   assert.deepEqual(result.collectionCounts.notes, { assetCount: 1, noteCount: 1 })
   assert.deepEqual(result.collectionCounts.writing, { assetCount: 1, noteCount: 1 })
   assert.deepEqual(result.collectionCounts.clippings, { assetCount: 0, noteCount: 1 })
-  assert.equal(fs.existsSync(path.join(githubContent, "notes", "index.md")), true)
+  assert.equal(fs.existsSync(path.join(githubContent, "notes", "index.md")), false)
   assert.equal(fs.existsSync(path.join(githubContent, "notes", "Published note.md")), true)
   assert.equal(fs.existsSync(path.join(githubContent, "notes", "media", "public-image.svg")), true)
-  assert.equal(fs.existsSync(path.join(githubContent, "writing", "index.md")), true)
+  assert.equal(fs.existsSync(path.join(githubContent, "writing", "index.md")), false)
   assert.equal(fs.existsSync(path.join(githubContent, "writing", "Technical post.md")), true)
   assert.equal(
     fs.existsSync(path.join(githubContent, "writing", "media", "writing-image.svg")),
     true,
   )
-  assert.equal(fs.existsSync(path.join(githubContent, "clippings", "index.md")), true)
+  assert.equal(fs.existsSync(path.join(githubContent, "clippings", "index.md")), false)
   assert.equal(fs.existsSync(path.join(githubContent, "clippings", "Interesting article.md")), true)
   assert.equal(fs.existsSync(path.join(githubContent, "capablegupta")), false)
   assert.equal(fs.existsSync(path.join(githubContent, "garden")), false)

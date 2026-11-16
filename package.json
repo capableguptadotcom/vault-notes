@@ -18,6 +18,7 @@
     "publish:github": "node scripts/publish-github.mjs",
     "watch:github": "node scripts/watch-publish-github.mjs",
     "publish": "node scripts/build-site.mjs",
+    "build:github": "node scripts/build-site.mjs --github",
     "dev:vault": "node scripts/watch-vault.mjs",
     "docs": "npx quartz build --serve -d docs",
     "check": "tsc --noEmit && npx prettier . --check",

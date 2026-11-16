@@ -1,11 +1,9 @@
 import { spawnSync } from "node:child_process"
-import fs from "node:fs"
 import path from "node:path"
 import { exportGithubContent } from "./sync-vault.mjs"
 
 const projectRoot = path.resolve(import.meta.dirname, "..")
-const managedContentPaths = ["content/notes", "content/writing", "content/clippings"]
-const retiredContentPaths = ["content/garden"]
+const contentPathspec = "published-notes"
 
 function git(...args) {
   const result = spawnSync("git", args, {
@@ -19,20 +17,10 @@ function git(...args) {
   return result.stdout.trim()
 }
 
-function isKnownGitPathspec(pathspec) {
-  if (fs.existsSync(path.join(projectRoot, pathspec))) return true
-  const result = spawnSync("git", ["ls-files", "--error-unmatch", pathspec], {
-    cwd: projectRoot,
-    stdio: "ignore",
-  })
-  return result.status === 0
-}
-
 await exportGithubContent(process.argv[2])
-const contentPathspecs = [...managedContentPaths, ...retiredContentPaths].filter(isKnownGitPathspec)
-git("add", "-A", "--", ...contentPathspecs)
+git("add", "-A", "--", contentPathspec)
 
-const stagedChanges = spawnSync("git", ["diff", "--cached", "--quiet", "--", ...contentPathspecs], {
+const stagedChanges = spawnSync("git", ["diff", "--cached", "--quiet", "--", contentPathspec], {
   cwd: projectRoot,
 })
 if (stagedChanges.status === 0) {
@@ -43,6 +31,6 @@ if (stagedChanges.status !== 1) {
   throw new Error("Unable to inspect staged public note changes.")
 }
 
-git("commit", "-m", "Publish Obsidian note updates", "--", ...contentPathspecs)
+git("commit", "-m", "Publish Obsidian note updates", "--", contentPathspec)
 git("push", "origin", "main")
 console.log("Published note updates pushed to GitHub Pages.")
