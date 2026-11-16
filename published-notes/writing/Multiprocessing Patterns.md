@@ -1,21 +1,24 @@
 ---
-Last edited time: 2024-05-23T13:11
 publish: true
+created: 2026-09-19T08:42:49.294Z
+modified: 2026-05-27T07:28:50.613Z
+published: 2026-05-27T07:28:50.613Z
+Last edited time: 2024-05-23T13:11
 ---
 
 Link and resources
 
-- [https://stackoverflow.com/questions/27435284/multiprocessing-vs-multithreading-vs-asyncio](https://stackoverflow.com/questions/27435284/multiprocessing-vs-multithreading-vs-asyncio)
-- [https://stackoverflow.com/questions/20886565/using-multiprocessing-process-with-a-maximum-number-of-simultaneous-processes](https://stackoverflow.com/questions/20886565/using-multiprocessing-process-with-a-maximum-number-of-simultaneous-processes)
-- [http://masnun.rocks/2016/10/06/async-python-the-different-forms-of-concurrency/](http://masnun.rocks/2016/10/06/async-python-the-different-forms-of-concurrency/)
-- [https://pymotw.com/3/multiprocessing/index.html](https://pymotw.com/3/multiprocessing/index.html)
-- [https://pymotw.com/3/concurrent.futures/](https://pymotw.com/3/concurrent.futures/)
+- <https://stackoverflow.com/questions/27435284/multiprocessing-vs-multithreading-vs-asyncio>
+- <https://stackoverflow.com/questions/20886565/using-multiprocessing-process-with-a-maximum-number-of-simultaneous-processes>
+- <http://masnun.rocks/2016/10/06/async-python-the-different-forms-of-concurrency/>
+- <https://pymotw.com/3/multiprocessing/index.html>
+- <https://pymotw.com/3/concurrent.futures/>
 
 Good read ( multiprocessing and multithreading ) - >
 
-> [!info] Python Multithreading and Multiprocessing Tutorial | Toptal®  
-> Python is a popular, powerful, and versatile programming language; however, concurrency and parallelism in Python often seems to be a matter of debate.  
-> [https://www.toptal.com/python/beginners-guide-to-concurrency-and-parallelism-in-python](https://www.toptal.com/python/beginners-guide-to-concurrency-and-parallelism-in-python)
+> [!info] Python Multithreading and Multiprocessing Tutorial | Toptal®\
+> Python is a popular, powerful, and versatile programming language; however, concurrency and parallelism in Python often seems to be a matter of debate.\
+> <https://www.toptal.com/python/beginners-guide-to-concurrency-and-parallelism-in-python>
 
 https://heyashy.medium.com/blazing-fast-etls-with-simultaneous-multiprocessing-and-multithreading-214865b56516
 
@@ -23,10 +26,13 @@ https://heyashy.medium.com/blazing-fast-etls-with-simultaneous-multiprocessing-a
 
 - threading
   - when not to use threading , advised almost never to use it , refer the `raymond hettinger` lecture , how can we replace it with async and other learnings \*\*imp
+
 - `async` and `asyncio`
+
   - asycio part of python lib , provide infra for writing concurrent code using `async/await` .
   - `async` is just a keyword that indicates that a function is a `coroutine` function which can be used with `**await**` to pause the execution of the coroutine until a result is available
   - `asyncio` provides additional functionality for managing coroutines, such as an event loop, which is responsible for scheduling and executing coroutines, and various APIs for performing I/O operations asynchronously
+
   ```Python
   import asyncio
 
@@ -37,10 +43,13 @@ https://heyashy.medium.com/blazing-fast-etls-with-simultaneous-multiprocessing-a
 
   asyncio.run(my_coroutine())
   ```
+
   In this example, the `**asyncio.run()**` function is used to run the `**my_coroutine()**` coroutine function. The `**await asyncio.sleep(1)**` line pauses the execution of the coroutine for one second, allowing other coroutines to run in the meantime.
+
   `**yield**`: In the context of generators, `**yield**` is used to produce a value to the caller and suspend the execution of the generator function until the next value is requested. When used in asynchronous generators, it allows the generator to produce values asynchronously. However, it does not provide the same level of control over asynchronous code execution as `**await**` does
+
   ```Python
-  # examples of async programming
+  # examples of async programming 
   import asyncio
 
   async def read_file():
@@ -79,6 +88,7 @@ https://heyashy.medium.com/blazing-fast-etls-with-simultaneous-multiprocessing-a
 
   asyncio.run(fetch_data())
   ```
+
 - process ( w.r.t to concurrent futures and direct threading library ),
   - heard about in terms of cpu intensive tasks , where overhead doesnt bother you that much , but yeah explore on it , see why we even need it .
 
@@ -144,11 +154,11 @@ if __name__ == "__main__":
 
 ### Asycio Notes
 
-> [!info] Python Asyncio: The Complete Guide - Super Fast Python  
-> Python Asyncio, your complete guide to coroutines and the asyncio module for concurrent programming in Python.  
-> [https://superfastpython.com/python-asyncio/](https://superfastpython.com/python-asyncio/)
+> [!info] Python Asyncio: The Complete Guide - Super Fast Python\
+> Python Asyncio, your complete guide to coroutines and the asyncio module for concurrent programming in Python.\
+> <https://superfastpython.com/python-asyncio/>
 
-[https://medium.com/@superfastpython/python-asyncio-7-day-crash-course-f946b3a02e48](https://medium.com/@superfastpython/python-asyncio-7-day-crash-course-f946b3a02e48)
+<https://medium.com/@superfastpython/python-asyncio-7-day-crash-course-f946b3a02e48>
 
 Examples of multiprocessing
 
@@ -175,7 +185,7 @@ def parallel_backprop(inputs, weights, biases, targets, learning_rate, num_proce
                for i in range(inputs.shape[0])]
     weights_deltas = [r.get()[0] for r in results]
     biases_deltas = [r.get()[1] for r in results]
-
+    
     # averaging deltas from all processes
     avg_weights_delta = np.mean(weights_deltas, axis=0)
     avg_biases_delta = np.mean(biases_deltas, axis=0)
@@ -187,15 +197,15 @@ def parallel_backprop(inputs, weights, biases, targets, learning_rate, num_proce
     return weights, biases
 ```
 
-code uses the `**multiprocessing**`  
-library to parallelize the backpropagation of a neural network by dividing the inputs into separate chunks and processing each chunk in a separate process. The  
-`**backprop_worker**`  
-function performs the forward and backward pass for a single input, and the  
-`**parallel_backprop**`  
-function uses the  
-`**multiprocessing.Pool**`  
-class to create a pool of processes and apply the  
-`**backprop_worker**`  
+code uses the `**multiprocessing**`\
+library to parallelize the backpropagation of a neural network by dividing the inputs into separate chunks and processing each chunk in a separate process. The\
+`**backprop_worker**`\
+function performs the forward and backward pass for a single input, and the\
+`**parallel_backprop**`\
+function uses the\
+`**multiprocessing.Pool**`\
+class to create a pool of processes and apply the\
+`**backprop_worker**`\
 function to each input in parallel. The results of the workers are collected and averaged to update the weights and biases of the network.
 
 > `Multiprocessing` library helps to par `parallelize` the function by dividing the input into seperate chunks and process each chunk in a seperate process
@@ -226,7 +236,7 @@ def backprop_worker(inputs, weights, biases, target, learning_rate, results):
 
 def parallel_backprop(inputs, weights, biases, targets, learning_rate, num_threads=2):
     results = []
-    threads = [threading.Thread(target=backprop_worker,
+    threads = [threading.Thread(target=backprop_worker, 
                                 args=(inputs[i], weights, biases, targets[i], learning_rate, results))
                for i in range(inputs.shape[0])]
     for t in threads:
@@ -254,12 +264,12 @@ Cons of using `**threading**` over `**multiprocessing**`:
 - `Limited parallelism`: Threads run in the same memory space, so they are subject to the Global Interpreter Lock (GIL), which limits parallelism. In other words, only one thread can execute Python bytecode at a time, even on multiple cores.
 - `Sharing memory`: Sharing memory between threads can be difficult and requires careful synchronization, as there is no built-in mechanism to ensure that changes made by one thread are visible to other threads.
 
-In conclusion, `**threading**` can be a good option for parallelizing code if the work is CPU-bound and the overhead of creating and managing separate processes is not desired. However, if the work is I/O-bound or if you need to take advantage of multiple cores, `**multiprocessing**`  
+In conclusion, `**threading**` can be a good option for parallelizing code if the work is CPU-bound and the overhead of creating and managing separate processes is not desired. However, if the work is I/O-bound or if you need to take advantage of multiple cores, `**multiprocessing**`\
 may be a better choice.
 
 Threads are better suited for I/O-bound tasks, while Pool functions are better suited for CPU-bound tasks. Generally speaking, if your task involves a lot of waiting on a response from an external source, such as a web server or a database, then it is better to use threading. On the other hand, if your task involves lots of computation or manipulation of data, then it is better to use the Pool functions to take advantage of parallel processing.
 
-Parallelize a function with multiple arguments using the multiprocessing library, you can use the Pool.starmap() method. This method takes a function, a list of tuples containing the arguments, and an optional chunksize argument to specify how many arguments should be processed in each chunk. For example, if you have a function called my_function that takes two arguments, you could call it like this:
+Parallelize a function with multiple arguments using the multiprocessing library, you can use the Pool.starmap() method. This method takes a function, a list of tuples containing the arguments, and an optional chunksize argument to specify how many arguments should be processed in each chunk. For example, if you have a function called my\_function that takes two arguments, you could call it like this:
 
 ```JavaScript
 from multiprocessing import Pool
@@ -295,13 +305,13 @@ pool.close()
 pool.join()
 ```
 
-The main difference between the `Pool.map` and Pool.apply*async methods in the multiprocessing module is that the Pool.map method blocks until all tasks in the iterable have been completed, while the* `_Pool.apply_` `async` method returns a ApplyResult object that can be used to check the status of the task. Additionally, Pool.map will return results in the same order as the inputs, while Pool.apply_async will return results in any order.
+The main difference between the `Pool.map` and Pool.apply\_async methods in the multiprocessing module is that the Pool.map method blocks until all tasks in the iterable have been completed, while the\_ `_Pool.apply_` `async` method returns a ApplyResult object that can be used to check the status of the task. Additionally, Pool.map will return results in the same order as the inputs, while Pool.apply\_async will return results in any order.
 
 > always call `pool.close` and then `pool.Join` after the main for loop or result ,
 
 if not , memory issues and retracing the error would be hard - > below is the link for better understanding
 
-[https://stackoverflow.com/questions/38271547/when-should-we-call-multiprocessing-pool-join](https://stackoverflow.com/questions/38271547/when-should-we-call-multiprocessing-pool-join)
+<https://stackoverflow.com/questions/38271547/when-should-we-call-multiprocessing-pool-join>
 
 ```JavaScript
 from multiprocessing import Pool, TimeoutError
@@ -321,8 +331,8 @@ if __name__ == '__main__':
         # print same numbers in arbitrary order
         for i in pool.imap_unordered(f, range(10)):
             print(i)
-
-				#! we can run it in loop and get reults by iterating
+				
+				#! we can run it in loop and get reults by iterating 
         # evaluate "f(20)" asynchronously
         res = pool.apply_async(f, (20,))      # runs in *only* one process
         print(res.get(timeout=1))             # prints "400"
@@ -358,7 +368,7 @@ diff b/w `map` , `apply_async`
 
 map → order isn’t affected , plus it blocks until every process is executed
 
-apply_async → return in random order , doesn’t block memory and other things can be executed
+apply\_async → return in random order , doesn’t block memory and other things can be executed
 
 > we have covered multiple arguments, single arguments and low level implementation
 
@@ -389,7 +399,7 @@ def create_index(contexts: List[str], embeddings: Embeddings) -> np.ndarray:
 ```Python
 from multiprocessing import Pool
 
-\#load mapping
+\#load mapping 
 LOADER_MAPPING = {
     ".csv": (CSVLoader, {}),
     ".docx": (UnstructuredWordDocumentLoader, {}),
@@ -444,45 +454,45 @@ def load_documents(source_dir: str, ignored_files: List[str] = []) -> List[Docum
 
 ### MUST READ ( Very Informative )
 
-[https://stackoverflow.com/questions/20776189/concurrent-futures-vs-multiprocessing-in-python-3](https://stackoverflow.com/questions/20776189/concurrent-futures-vs-multiprocessing-in-python-3)
+<https://stackoverflow.com/questions/20776189/concurrent-futures-vs-multiprocessing-in-python-3>
 
 1-2 questions are → i havent seen speedup using thread pool executor in real circumstances ( i/o bound operations )
 
 Example of thread pool executor
 
 ```Python
-from concurrent.futures import ThreadPoolExecutor
-import logging
+from concurrent.futures import ThreadPoolExecutor  
+import logging  
 
-BATCH_SIZE = 1000
-NUM_WORKERS = 10
+BATCH_SIZE = 1000  
+NUM_WORKERS = 10  
 
-def create_search_client(index_name):
-    return SearchClient(
-        endpoint=SEARCH_SERVICE_ENDPOINT, index_name=index_name, credential=credential
-    )
+def create_search_client(index_name):  
+    return SearchClient(  
+        endpoint=SEARCH_SERVICE_ENDPOINT, index_name=index_name, credential=credential  
+    )  
 
-def upload_documents_to_index(client, documents):
-    def upload_batch(batch):
-        try:
-            result = client.merge_or_upload_documents(documents=batch)
-            if result.is_error:
-                for error in result.errors:
-                    logging.error(
-                        f"Failed to upload document with ID: {error.key}, error: {error.error.message}"
-                    )
-            else:
-                logging.info("Successfully uploaded batch")
-        except Exception as e:
-            logging.error(f"Failed to upload batch: {e}")
+def upload_documents_to_index(client, documents):  
+    def upload_batch(batch):  
+        try:  
+            result = client.merge_or_upload_documents(documents=batch)  
+            if result.is_error:  
+                for error in result.errors:  
+                    logging.error(  
+                        f"Failed to upload document with ID: {error.key}, error: {error.error.message}"  
+                    )  
+            else:  
+                logging.info("Successfully uploaded batch")  
+        except Exception as e:  
+            logging.error(f"Failed to upload batch: {e}")  
 
-    with ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
-        for i in range(0, len(documents), BATCH_SIZE):
-            batch = documents[i : i + BATCH_SIZE]
-            executor.submit(upload_batch, batch)
+    with ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:  
+        for i in range(0, len(documents), BATCH_SIZE):  
+            batch = documents[i : i + BATCH_SIZE]  
+            executor.submit(upload_batch, batch)  
 
-index_names = ["dbpedia-1m-baseline", "dbpedia-1m-stored", "dbpedia-1m-scalar-quantization", "dbpedia-1m-both"]
-for index_name in index_names:
-    client = create_search_client(index_name)
+index_names = ["dbpedia-1m-baseline", "dbpedia-1m-stored", "dbpedia-1m-scalar-quantization", "dbpedia-1m-both"]  
+for index_name in index_names:  
+    client = create_search_client(index_name)  
     upload_documents_to_index(client, transformed_documents
 ```

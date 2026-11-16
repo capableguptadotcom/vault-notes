@@ -1,6 +1,9 @@
 ---
-title: Task Manager
 publish: true
+title: Task Manager
+created: 2026-09-19T08:42:49.301Z
+modified: 2026-05-27T07:32:15.215Z
+published: 2026-05-27T07:32:15.215Z
 ---
 
 This implementation provides a robust manager for handling both I/O and CPU-bound tasks in a production FastAPI environment.
@@ -26,7 +29,7 @@ class ProductionTaskManager:
         """Run I/O bound blocking function in thread pool."""
         task_id = f"io_{uuid.uuid4().hex[:8]}"
         self.tasks[task_id] = {"status": "running", "type": "io"}
-
+        
         loop = asyncio.get_running_loop()
         try:
             result = await loop.run_in_executor(self.io_executor, lambda: func(*args, **kwargs))
@@ -40,7 +43,7 @@ class ProductionTaskManager:
         """Run CPU bound function in process pool (bypasses GIL)."""
         task_id = f"cpu_{uuid.uuid4().hex[:8]}"
         self.tasks[task_id] = {"status": "running", "type": "cpu"}
-
+        
         loop = asyncio.get_running_loop()
         try:
             result = await loop.run_in_executor(self.cpu_executor, lambda: func(*args, **kwargs))

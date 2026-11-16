@@ -1,8 +1,9 @@
 ---
-title: "Welcome"
 publish: true
-created: "2026-05-25"
-published: "2026-05-25"
+title: Welcome
+created: 2026-05-25
+modified: 2026-05-27T07:04:51.650Z
+published: 2026-05-25
 tags:
   - notes
 ---
