@@ -1,11 +1,11 @@
 ---
 publish: true
+aliases:
+  - clippings/Mindset Shifts
 title: Mindset Shifts
 created: 2026-05-25
-modified: 2026-05-27T07:03:24.900Z
-published: 2026-05-27T07:03:24.900Z
-aliases:
-  - clippings/Mindset-Shifts
+modified: 2026-11-19T07:29:54.441Z
+published: 2026-11-19T07:29:54.441Z
 tags:
   - anxiety
   - goals
