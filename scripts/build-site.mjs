@@ -17,7 +17,7 @@ const contentRoot = githubBuild
 try {
   if (githubBuild) {
     await fs.cp(path.join(projectRoot, "content"), contentRoot, { recursive: true })
-    for (const section of ["notes", "writing", "clippings"]) {
+    for (const section of ["notes", "writing", "reading"]) {
       const source = path.join(projectRoot, "published-notes", section)
       if (existsSync(source)) {
         await fs.cp(source, path.join(contentRoot, section), { recursive: true, force: false })

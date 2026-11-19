@@ -260,7 +260,7 @@ body[data-slug="index"] .page > #quartz-body > .center {
   width: clamp(5.5rem, 16vw, 9rem);
 }
 
-body:is([data-slug="writing/index"], [data-slug="clippings/index"]) .section > .tags {
+body:is([data-slug="writing/index"], [data-slug="reading/index"]) .section > .tags {
   display: none;
 }
 

@@ -4,11 +4,11 @@
 
 ## Publish and unpublish
 
-1. In Akshara, put the note in `capablegupta/notes/`, `capablegupta/writing/`, or `capablegupta/clippings/`.
+1. In Akshara, put the note in `capablegupta/notes/`, `capablegupta/writing/`, or `capablegupta/reading/`.
 2. Turn on the `publish` checkbox in the note’s Properties. Edits to published notes sync automatically too.
 3. Keep Obsidian desktop open. Quartz Syncer checks every minute, then GitHub Pages builds and deploys the change.
 
-The homepage automatically shows up to three of the newest published entries in **Writing** and **Reading**. On the site, Reading is the name for the existing `clippings` section.
+The homepage automatically shows up to three of the newest published entries in **Writing** and **Reading**. The Reading archive is at `/reading/`. The previous Clippings archive and its published entry redirect to their new URLs.
 
 Turn off `publish` to remove the public page on the next successful deployment. The note stays in Obsidian.
 

@@ -24,10 +24,10 @@ const publicCollections = [
     title: "Writing",
   },
   {
-    description: "Short excerpts from other people's work with source links and commentary.",
-    outputFolder: "clippings",
-    sourceFolder: "clippings",
-    title: "Clippings",
+    description: "Things worth reading, with source links and short notes.",
+    outputFolder: "reading",
+    sourceFolder: "reading",
+    title: "Reading",
   },
 ]
 const collectionBySourceFolder = new Map(
@@ -178,13 +178,13 @@ function publicCollectionForNote(note) {
 
   if (normalizedRootFolder === "garden") {
     throw new Error(
-      `Published note is still in the retired Garden/ folder: ${note.relativePath}. Move it under capablegupta/notes, capablegupta/writing, or capablegupta/clippings before publishing.`,
+      `Published note is still in the retired Garden/ folder: ${note.relativePath}. Move it under capablegupta/notes, capablegupta/writing, or capablegupta/reading before publishing.`,
     )
   }
 
   if (collectionBySourceFolder.has(normalizedRootFolder)) {
     throw new Error(
-      `Published note must live under capablegupta/notes, capablegupta/writing, or capablegupta/clippings: ${note.relativePath}`,
+      `Published note must live under capablegupta/notes, capablegupta/writing, or capablegupta/reading: ${note.relativePath}`,
     )
   }
 
@@ -197,7 +197,7 @@ function publicCollectionForNote(note) {
   const collection = collectionBySourceFolder.get(normalizedSourceFolder)
   if (!collection) {
     throw new Error(
-      `Published note must live under capablegupta/notes, capablegupta/writing, or capablegupta/clippings: ${note.relativePath}`,
+      `Published note must live under capablegupta/notes, capablegupta/writing, or capablegupta/reading: ${note.relativePath}`,
     )
   }
 
@@ -311,8 +311,13 @@ async function selectPublishedContent(vaultRoot) {
 
 async function writeCollectionIndex(contentRoot, collection) {
   const destination = path.join(contentRoot, "index.md")
+  const curatedIndex = path.join(curatedContentRoot, collection.outputFolder, "index.md")
+  const markdown = await fs.readFile(curatedIndex, "utf8").catch((error) => {
+    if (error.code === "ENOENT") return collectionIndexMarkdown(collection)
+    throw error
+  })
   await fs.mkdir(path.dirname(destination), { recursive: true })
-  await fs.writeFile(destination, collectionIndexMarkdown(collection))
+  await fs.writeFile(destination, markdown)
 }
 
 async function writeCollectionContent(contentRoot, group) {

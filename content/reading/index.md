@@ -4,8 +4,10 @@ publish: true
 created: 2026-05-27
 published: 2026-05-27
 description: Things worth reading, with source links and short notes.
+aliases:
+  - clippings/index
 tags:
-  - clippings
+  - reading
 ---
 
 Things worth reading, with source links and short notes.

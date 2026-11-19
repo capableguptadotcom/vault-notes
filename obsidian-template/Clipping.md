@@ -6,7 +6,7 @@ published: "{{date}}"
 source_url: ""
 source_author: ""
 tags:
-  - clippings
+  - reading
 ---
 
 ## Excerpt

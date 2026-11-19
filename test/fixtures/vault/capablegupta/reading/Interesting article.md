@@ -5,8 +5,10 @@ created: 2026-05-27
 published: 2026-05-27
 source_url: https://example.com/article
 source_author: Example Author
+aliases:
+  - clippings/Interesting article
 tags:
-  - clippings
+  - reading
 ---
 
 ## Excerpt

@@ -59,11 +59,8 @@ test("renders only public notes and assets embedded by them", () => {
     fs.existsSync(path.join(exportedContent, "writing", "media", "writing-image.svg")),
     true,
   )
-  assert.equal(fs.existsSync(path.join(exportedContent, "clippings", "index.md")), true)
-  assert.equal(
-    fs.existsSync(path.join(exportedContent, "clippings", "Interesting article.md")),
-    true,
-  )
+  assert.equal(fs.existsSync(path.join(exportedContent, "reading", "index.md")), true)
+  assert.equal(fs.existsSync(path.join(exportedContent, "reading", "Interesting article.md")), true)
   assert.equal(fs.existsSync(path.join(exportedContent, "notes", "Private note.md")), false)
   assert.equal(
     fs.existsSync(path.join(exportedContent, "notes", "Templates", "Should not publish.md")),
@@ -87,21 +84,31 @@ test("renders only public notes and assets embedded by them", () => {
     fs.existsSync(path.join(renderedSite, "writing", "media", "writing-image.svg")),
     true,
   )
-  assert.equal(fs.existsSync(path.join(renderedSite, "clippings", "index.html")), true)
-  assert.equal(
-    fs.existsSync(path.join(renderedSite, "clippings", "Interesting-article.html")),
-    true,
-  )
+  assert.equal(fs.existsSync(path.join(renderedSite, "reading", "index.html")), true)
+  assert.equal(fs.existsSync(path.join(renderedSite, "reading", "Interesting-article.html")), true)
   assert.equal(fs.existsSync(path.join(renderedSite, "notes", "Private-note.html")), false)
   assert.equal(fs.existsSync(path.join(renderedSite, "notes", "media", "private-image.svg")), false)
   assert.equal(fs.existsSync(path.join(renderedSite, "garden")), false)
 
   const homepage = fs.readFileSync(path.join(renderedSite, "index.html"), "utf8")
   const writing = homepage.match(/<section aria-labelledby="recent-writing">.*?<\/section>/s)?.[0]
-  const reading = homepage.match(/<section aria-labelledby="recent-clippings">.*?<\/section>/s)?.[0]
+  const reading = homepage.match(/<section aria-labelledby="recent-reading">.*?<\/section>/s)?.[0]
   assert.match(writing ?? "", /href="\.\/writing\/Technical-post"/)
-  assert.match(reading ?? "", /href="\.\/clippings\/Interesting-article"/)
+  assert.match(reading ?? "", /href="\.\/reading\/Interesting-article"/)
   assert.doesNotMatch(homepage, /href="[^"]*\/notes\/Private-note"/)
+
+  const writingPost = fs.readFileSync(
+    path.join(renderedSite, "writing", "Technical-post.html"),
+    "utf8",
+  )
+  assert.match(writingPost, /href="\.\.\/reading\/Interesting-article"/)
+  const oldArchive = fs.readFileSync(path.join(renderedSite, "clippings", "index.html"), "utf8")
+  assert.match(oldArchive, /rel="canonical" href="\.\.\/reading\/"/)
+  const oldArticle = fs.readFileSync(
+    path.join(renderedSite, "clippings", "Interesting-article.html"),
+    "utf8",
+  )
+  assert.match(oldArticle, /rel="canonical" href="\.\.\/reading\/Interesting-article"/)
 })
 
 test("rejects public paths that collide inside a collection", async () => {
@@ -158,7 +165,7 @@ test("rejects root-level section folders that bypass the public root", async () 
 
   await assert.rejects(
     () => syncVault(looseVault, looseContent),
-    /must live under capablegupta\/notes, capablegupta\/writing, or capablegupta\/clippings/,
+    /must live under capablegupta\/notes, capablegupta\/writing, or capablegupta\/reading/,
   )
 })
 
@@ -173,7 +180,7 @@ test("rejects published notes under unknown capablegupta folders", async () => {
 
   await assert.rejects(
     () => syncVault(wrongFolderVault, wrongFolderContent),
-    /must live under capablegupta\/notes, capablegupta\/writing, or capablegupta\/clippings/,
+    /must live under capablegupta\/notes, capablegupta\/writing, or capablegupta\/reading/,
   )
 })
 
@@ -185,7 +192,7 @@ test("exports only opted-in content for a public GitHub Pages repository", async
   assert.equal(result.assetCount, 2)
   assert.deepEqual(result.collectionCounts.notes, { assetCount: 1, noteCount: 1 })
   assert.deepEqual(result.collectionCounts.writing, { assetCount: 1, noteCount: 1 })
-  assert.deepEqual(result.collectionCounts.clippings, { assetCount: 0, noteCount: 1 })
+  assert.deepEqual(result.collectionCounts.reading, { assetCount: 0, noteCount: 1 })
   assert.equal(fs.existsSync(path.join(githubContent, "notes", "index.md")), false)
   assert.equal(fs.existsSync(path.join(githubContent, "notes", "Published note.md")), true)
   assert.equal(fs.existsSync(path.join(githubContent, "notes", "media", "public-image.svg")), true)
@@ -195,8 +202,8 @@ test("exports only opted-in content for a public GitHub Pages repository", async
     fs.existsSync(path.join(githubContent, "writing", "media", "writing-image.svg")),
     true,
   )
-  assert.equal(fs.existsSync(path.join(githubContent, "clippings", "index.md")), false)
-  assert.equal(fs.existsSync(path.join(githubContent, "clippings", "Interesting article.md")), true)
+  assert.equal(fs.existsSync(path.join(githubContent, "reading", "index.md")), false)
+  assert.equal(fs.existsSync(path.join(githubContent, "reading", "Interesting article.md")), true)
   assert.equal(fs.existsSync(path.join(githubContent, "capablegupta")), false)
   assert.equal(fs.existsSync(path.join(githubContent, "garden")), false)
   assert.equal(fs.existsSync(path.join(githubContent, "notes", "Private note.md")), false)

@@ -10,3 +10,5 @@ tags:
 This technical post embeds a public writing image.
 
 ![Writing diagram](../media/writing-image.svg)
+
+Related reading: [[Interesting article]].

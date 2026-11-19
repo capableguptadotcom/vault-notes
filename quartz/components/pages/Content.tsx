@@ -7,7 +7,7 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 
 const recentSections = [
   { folder: "writing", title: "Recent writing" },
-  { folder: "clippings", title: "Recent reading" },
+  { folder: "reading", title: "Recent reading" },
 ]
 
 function publicationTime(page: QuartzPluginData): number {

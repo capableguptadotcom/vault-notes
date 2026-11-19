@@ -4,7 +4,7 @@ import { QuartzComponentProps } from "./quartz/components/types"
 
 const siteLinks = {
   Writing: "/writing/",
-  Reading: "/clippings/",
+  Reading: "/reading/",
   About: "/about",
 }
 

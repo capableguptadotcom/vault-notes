@@ -84,7 +84,6 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
             if (aliases) {
               data.aliases = aliases // frontmatter
               file.data.aliases = getAliasSlugs(aliases)
-              allSlugs.push(...file.data.aliases)
             }
 
             if (data.permalink != null && data.permalink.toString() !== "") {
@@ -92,8 +91,13 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
               const aliases = file.data.aliases ?? []
               aliases.push(data.permalink)
               file.data.aliases = aliases
-              allSlugs.push(data.permalink)
             }
+
+            // A redirect with the same filename should not make a bare wikilink ambiguous.
+            const filename = file.data.slug?.split("/").at(-1)
+            allSlugs.push(
+              ...(file.data.aliases ?? []).filter((alias) => alias.split("/").at(-1) !== filename),
+            )
 
             const cssclasses = coerceToArray(coalesceAliases(data, ["cssclasses", "cssclass"]))
             if (cssclasses) data.cssclasses = cssclasses

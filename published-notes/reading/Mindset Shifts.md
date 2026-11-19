@@ -4,6 +4,8 @@ title: Mindset Shifts
 created: 2026-05-25
 modified: 2026-05-27T07:03:24.900Z
 published: 2026-05-27T07:03:24.900Z
+aliases:
+  - clippings/Mindset-Shifts
 tags:
   - anxiety
   - goals
