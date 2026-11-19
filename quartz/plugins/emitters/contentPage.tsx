@@ -111,7 +111,8 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
 
       for (const [tree, file] of content) {
         const slug = file.data.slug!
-        if (!changedSlugs.has(slug)) continue
+        // The homepage also shows recent entries from other pages.
+        if (slug !== "index" && !changedSlugs.has(slug)) continue
         if (slug.endsWith("/index") || slug.startsWith("tags/")) continue
 
         yield processContent(ctx, tree, file.data, allFiles, opts, resources)

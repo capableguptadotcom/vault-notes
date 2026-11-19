@@ -1,50 +1,53 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { classNames } from "../util/lang"
+import { simplifySlug } from "../util/path"
+// @ts-ignore
+import menuScript from "./scripts/siteNav.inline"
 
-const SiteNav: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
-  return (
-    <nav class={classNames(displayClass, "site-nav")} aria-label="Site navigation">
-      <div class="site-nav-links">
-        <a href="/notes/">Notes</a>
-        <a href="/writing/">Writing</a>
-        <a href="/clippings/">Clippings</a>
-      </div>
-      <details class="site-nav-menu">
-        <summary aria-label="Open site navigation">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-            class="lucide-menu"
-          >
-            <line x1="4" x2="20" y1="12" y2="12" />
-            <line x1="4" x2="20" y1="6" y2="6" />
-            <line x1="4" x2="20" y1="18" y2="18" />
-          </svg>
-        </summary>
-        <div class="site-nav-panel">
-          <a href="/notes/">Notes</a>
-          <a href="/writing/">Writing</a>
-          <a href="/clippings/">Clippings</a>
-          <a href="/#about">About</a>
-        </div>
-      </details>
-    </nav>
-  )
+interface Options {
+  links: Record<string, string>
 }
 
-SiteNav.css = `
+export default (({ links }: Options) => {
+  const SiteNav: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
+    const currentPage = `/${simplifySlug(fileData.slug!)}`
+    const renderLinks = () =>
+      Object.entries(links).map(([title, href]) => (
+        <a href={href} aria-current={href === currentPage ? "page" : undefined}>
+          {title}
+        </a>
+      ))
+
+    return (
+      <nav class={classNames(displayClass, "site-nav")} aria-label="Site navigation">
+        <div class="site-nav-links">{renderLinks()}</div>
+        <details class="site-nav-menu">
+          <summary aria-label="Menu" title="Menu">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </summary>
+          <div class="site-nav-panel">{renderLinks()}</div>
+        </details>
+      </nav>
+    )
+  }
+
+  SiteNav.afterDOMLoaded = menuScript
+  SiteNav.css = `
 .site-nav {
   align-items: center;
   display: flex;
-  position: relative;
 }
 
 .site-nav-links {
@@ -54,13 +57,16 @@ SiteNav.css = `
 }
 
 .site-nav a {
-  color: var(--gray);
+  color: var(--darkgray);
+  font-size: 0.9rem;
   font-weight: 400;
-  line-height: 1.8rem;
 }
 
-.site-nav a:hover {
-  color: var(--dark);
+.site-nav a:hover,
+.site-nav a[aria-current="page"] {
+  color: var(--secondary);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
 }
 
 .site-nav-menu {
@@ -70,35 +76,39 @@ SiteNav.css = `
 
 .site-nav-menu summary {
   align-items: center;
-  color: var(--gray);
+  color: var(--darkgray);
   cursor: pointer;
   display: flex;
-  height: 1.8rem;
+  height: 44px;
   justify-content: center;
   list-style: none;
-  width: 1.8rem;
+  touch-action: manipulation;
+  width: 44px;
 }
 
 .site-nav-menu summary::-webkit-details-marker {
   display: none;
 }
 
-.site-nav-menu summary:hover {
-  color: var(--dark);
-}
-
 .site-nav-panel {
   background: var(--light);
   border: 1px solid var(--lightgray);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
-  display: grid;
-  gap: 0.7rem;
-  min-width: 8.5rem;
-  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+  inset-inline-end: 0;
+  min-width: 10rem;
+  padding: 0.3rem 0.45rem;
   position: absolute;
-  right: 0;
-  top: 2.25rem;
+  top: calc(100% + 0.45rem);
   z-index: 2;
+}
+
+.site-nav-panel a {
+  align-items: center;
+  display: flex;
+  min-height: 44px;
+  padding: 0 0.65rem;
+  touch-action: manipulation;
 }
 
 @media all and (max-width: 800px) {
@@ -112,4 +122,5 @@ SiteNav.css = `
 }
 `
 
-export default (() => SiteNav) satisfies QuartzComponentConstructor
+  return SiteNav
+}) satisfies QuartzComponentConstructor<Options>

@@ -95,6 +95,13 @@ test("renders only public notes and assets embedded by them", () => {
   assert.equal(fs.existsSync(path.join(renderedSite, "notes", "Private-note.html")), false)
   assert.equal(fs.existsSync(path.join(renderedSite, "notes", "media", "private-image.svg")), false)
   assert.equal(fs.existsSync(path.join(renderedSite, "garden")), false)
+
+  const homepage = fs.readFileSync(path.join(renderedSite, "index.html"), "utf8")
+  const writing = homepage.match(/<section aria-labelledby="recent-writing">.*?<\/section>/s)?.[0]
+  const reading = homepage.match(/<section aria-labelledby="recent-clippings">.*?<\/section>/s)?.[0]
+  assert.match(writing ?? "", /href="\.\/writing\/Technical-post"/)
+  assert.match(reading ?? "", /href="\.\/clippings\/Interesting-article"/)
+  assert.doesNotMatch(homepage, /href="[^"]*\/notes\/Private-note"/)
 })
 
 test("rejects public paths that collide inside a collection", async () => {

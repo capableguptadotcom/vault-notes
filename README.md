@@ -8,6 +8,8 @@
 2. Turn on the `publish` checkbox in the note’s Properties. Edits to published notes sync automatically too.
 3. Keep Obsidian desktop open. Quartz Syncer checks every minute, then GitHub Pages builds and deploys the change.
 
+The homepage automatically shows up to three of the newest published entries in **Writing** and **Reading**. On the site, Reading is the name for the existing `clippings` section.
+
 Turn off `publish` to remove the public page on the next successful deployment. The note stays in Obsidian.
 
 - Review the note’s text, properties, and embedded files before publishing. Keep private material and templates outside `capablegupta/`. Earlier versions can remain in public Git history after unpublishing.

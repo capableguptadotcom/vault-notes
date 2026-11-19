@@ -1,11 +1,11 @@
 ---
-title: Clippings
+title: Reading
 publish: true
 created: 2026-05-27
 published: 2026-05-27
-description: Short excerpts from other people's work with source links and commentary.
+description: Things worth reading, with source links and short notes.
 tags:
   - clippings
 ---
 
-Short excerpts from other people's work with source links and commentary.
+Things worth reading, with source links and short notes.

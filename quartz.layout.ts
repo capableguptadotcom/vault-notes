@@ -1,5 +1,24 @@
 import { PageLayout, SharedLayout } from "./quartz/cfg"
 import * as Component from "./quartz/components"
+import { QuartzComponentProps } from "./quartz/components/types"
+
+const siteLinks = {
+  Writing: "/writing/",
+  Reading: "/clippings/",
+  About: "/about",
+}
+
+const siteHeader = [
+  Component.PageTitle(),
+  Component.SiteNav({ links: siteLinks }),
+  Component.Flex({
+    gap: "0",
+    components: [{ Component: Component.Search() }, { Component: Component.Darkmode() }],
+  }),
+]
+
+const isArticle = ({ fileData }: QuartzComponentProps) =>
+  fileData.slug !== "index" && fileData.slug !== "about"
 
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
@@ -7,8 +26,10 @@ export const sharedPageComponents: SharedLayout = {
   header: [],
   afterBody: [],
   footer: Component.Footer({
+    copyright: "© 2026 Saksham Gupta",
     links: {
-      X: "https://x.com/capablegupta",
+      Home: "/",
+      ...siteLinks,
     },
   }),
 }
@@ -18,45 +39,23 @@ export const defaultContentPageLayout: PageLayout = {
   beforeBody: [
     Component.ConditionalRender({
       component: Component.Breadcrumbs(),
-      condition: (page) => page.fileData.slug !== "index",
+      condition: isArticle,
     }),
     Component.ConditionalRender({
       component: Component.ArticleTitle(),
-      condition: (page) => page.fileData.slug !== "index",
+      condition: isArticle,
     }),
     Component.ConditionalRender({
       component: Component.ContentMeta(),
-      condition: (page) => page.fileData.slug !== "index",
+      condition: isArticle,
     }),
     Component.ConditionalRender({
       component: Component.TagList(),
-      condition: (page) => page.fileData.slug !== "index",
+      condition: isArticle,
     }),
   ],
-  left: [
-    Component.PageTitle(),
-    Component.SiteNav(),
-    Component.Flex({
-      components: [
-        {
-          Component: Component.Search(),
-          grow: true,
-        },
-        { Component: Component.Darkmode() },
-      ],
-    }),
-  ],
+  left: siteHeader,
   right: [
-    Component.ConditionalRender({
-      component: Component.RecentNotes({
-        title: "Latest",
-        limit: 7,
-        linkToMore: false,
-        showTags: false,
-        filter: (page) => page.slug !== "index" && !page.slug?.endsWith("/index"),
-      }),
-      condition: (page) => page.fileData.slug === "index",
-    }),
     Component.ConditionalRender({
       component: Component.RecentNotes({
         title: "You might want to explore",
@@ -64,9 +63,10 @@ export const defaultContentPageLayout: PageLayout = {
         linkToMore: false,
         showTags: false,
         excludeCurrent: true,
-        filter: (page) => page.slug !== "index" && !page.slug?.endsWith("/index"),
+        filter: (page) =>
+          page.slug !== "index" && page.slug !== "about" && !page.slug?.endsWith("/index"),
       }),
-      condition: (page) => page.fileData.slug !== "index",
+      condition: isArticle,
     }),
   ],
 }
@@ -74,18 +74,6 @@ export const defaultContentPageLayout: PageLayout = {
 // components for pages that display lists of pages  (e.g. tags or folders)
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [Component.Breadcrumbs(), Component.ArticleTitle(), Component.ContentMeta()],
-  left: [
-    Component.PageTitle(),
-    Component.SiteNav(),
-    Component.Flex({
-      components: [
-        {
-          Component: Component.Search(),
-          grow: true,
-        },
-        { Component: Component.Darkmode() },
-      ],
-    }),
-  ],
+  left: siteHeader,
   right: [],
 }

@@ -500,7 +500,9 @@ async function setupSearch(searchElement: Element, currentSlug: FullSlug, data: 
   searchBar.addEventListener("input", onType)
   window.addCleanup(() => searchBar.removeEventListener("input", onType))
 
-  registerEscapeHandler(container, hideSearch)
+  registerEscapeHandler(container, () => {
+    if (container.classList.contains("active")) hideSearch()
+  })
   await fillDocument(data)
 }
 
