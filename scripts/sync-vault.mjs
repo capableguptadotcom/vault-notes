@@ -12,12 +12,6 @@ const defaultContentRoot = path.join(os.tmpdir(), `${path.basename(projectRoot)}
 const publicRootFolder = "capablegupta"
 const publicCollections = [
   {
-    description: "Personal notes, works in progress, and connected ideas.",
-    outputFolder: "notes",
-    sourceFolder: "notes",
-    title: "Notes",
-  },
-  {
     description: "Technical posts and longer-form public writing.",
     outputFolder: "writing",
     sourceFolder: "writing",
@@ -33,9 +27,10 @@ const publicCollections = [
 const collectionBySourceFolder = new Map(
   publicCollections.map((collection) => [collection.sourceFolder, collection]),
 )
+const retiredContentFolders = ["garden", "notes"]
 const managedContentFolders = new Set([
   ...publicCollections.map((collection) => collection.outputFolder),
-  "garden",
+  ...retiredContentFolders,
 ])
 const ignoredFolders = new Set([
   ".git",
@@ -178,13 +173,13 @@ function publicCollectionForNote(note) {
 
   if (normalizedRootFolder === "garden") {
     throw new Error(
-      `Published note is still in the retired Garden/ folder: ${note.relativePath}. Move it under capablegupta/notes, capablegupta/writing, or capablegupta/reading before publishing.`,
+      `Published note is still in the retired Garden/ folder: ${note.relativePath}. Move it under capablegupta/writing or capablegupta/reading before publishing.`,
     )
   }
 
   if (collectionBySourceFolder.has(normalizedRootFolder)) {
     throw new Error(
-      `Published note must live under capablegupta/notes, capablegupta/writing, or capablegupta/reading: ${note.relativePath}`,
+      `Published note must live under capablegupta/writing or capablegupta/reading: ${note.relativePath}`,
     )
   }
 
@@ -197,7 +192,7 @@ function publicCollectionForNote(note) {
   const collection = collectionBySourceFolder.get(normalizedSourceFolder)
   if (!collection) {
     throw new Error(
-      `Published note must live under capablegupta/notes, capablegupta/writing, or capablegupta/reading: ${note.relativePath}`,
+      `Published note must live under capablegupta/writing or capablegupta/reading: ${note.relativePath}`,
     )
   }
 
@@ -274,7 +269,9 @@ async function resetManagedContentRoots(contentRoot) {
     await clearContentRoot(path.join(contentRoot, collection.outputFolder))
   }
 
-  await fs.rm(path.join(contentRoot, "garden"), { recursive: true, force: true })
+  for (const folder of retiredContentFolders) {
+    await fs.rm(path.join(contentRoot, folder), { recursive: true, force: true })
+  }
 }
 
 async function selectPublishedContent(vaultRoot) {

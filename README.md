@@ -4,7 +4,7 @@
 
 ## Publish and unpublish
 
-1. In Akshara, put the note in `capablegupta/notes/`, `capablegupta/writing/`, or `capablegupta/reading/`.
+1. In Akshara, put the note in `capablegupta/writing/` or `capablegupta/reading/`.
 2. Turn on the `publish` checkbox in the note’s Properties. Edits to published notes sync automatically too.
 3. Keep Obsidian desktop open. Quartz Syncer checks every minute, then GitHub Pages builds and deploys the change.
 
@@ -30,7 +30,7 @@ Turn off `publish` to remove the public page on the next successful deployment. 
 
 Use **Username & token/password** authentication with `capableguptadotcom`. Save a fine-grained GitHub token scoped to `vault-notes` with **Contents → Read and write** in Quartz Syncer’s **Access token** setting.
 
-Keep the destination set to `published-notes`. Quartz Syncer can delete files in that folder when it can’t match them to a published note. The homepage and the three section landing pages live in [`content/`](content/) and take precedence during the build.
+Keep the destination set to `published-notes`. Quartz Syncer can delete files in that folder when it can’t match them to a published note. The site’s landing pages live in [`content/`](content/) and take precedence during the build.
 
 The same setup works with another vault. Use that vault’s public folder and a dedicated publishing destination. Keep one source vault per destination so automatic cleanup can tell which notes belong there.
 
