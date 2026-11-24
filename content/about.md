@@ -12,8 +12,7 @@ description: About Saksham Gupta.
     <h1>About</h1>
     <p>I’m Saksham Gupta. I’m growing into product engineering by exploring agent-first software: what it should feel like to use, how it should work, and what it takes to build it.</p>
     <p>
-      <a href="/writing/">Writing</a>
-      <a href="https://x.com/capablegupta" aria-label="X" style="display: inline-flex; vertical-align: middle; padding: 4px; margin-left: 8px;">
+      <a href="https://x.com/capablegupta" aria-label="X" style="display: inline-flex; vertical-align: middle; padding: 4px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
           <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.64 7.584H.47l8.6-9.835L0 1.154h7.594l5.243 6.932 6.064-6.933ZM17.61 20.644h2.039L6.49 3.24H4.303l13.307 17.404Z"></path>
         </svg>
