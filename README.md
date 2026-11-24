@@ -1,6 +1,6 @@
-# capablegupta.com
+## [capablegupta.com](https://capablegupta.com)
 
-## Build locally
+### Build locally
 
 Requires Node.js 22+ and npm 10.9.2+.
 
