@@ -10,7 +10,7 @@ description: About Saksham Gupta.
   </span>
   <div>
     <h1>About</h1>
-    <p>I’m curious about what happens when software can act on your behalf. When should it ask you first? What should happen if it gets halfway through? I use small experiments to work through those questions.</p>
-    <p><a href="https://x.com/capablegupta">Find me on X</a></p>
+    <p>I’m Saksham Gupta. I’m growing into product engineering by exploring agent-first software: what it should feel like to use, how it should work, and what it takes to build it.</p>
+    <p><a href="/writing/">Writing</a></p>
   </div>
 </div>
